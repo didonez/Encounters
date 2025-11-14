@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RSVP Festa com Cálculo de Custo</title>
-    <!-- Carrega Tailwind CSS para estilização -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Define a fonte Inter e estilos customizados -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
@@ -25,7 +23,7 @@
             overflow: hidden;
         }
         .header-bg {
-            background: linear-gradient(135deg, #4F46E5 0%, #818CF8 100%); /* Novo gradiente mais neutro */
+            background: linear-gradient(135deg, #4F46E5 0%, #818CF8 100%);
         }
         .loader {
             border: 4px solid #f3f3f3;
@@ -53,35 +51,39 @@
         .detail-item span {
             margin-left: 8px;
         }
+        /* Estilo para a mensagem de carregamento inicial/conexão */
+        #connecting {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #6366f1;
+            font-weight: 500;
+        }
     </style>
-    <!-- Módulos do Firebase (v11.6.1) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, collection, query, setDoc, serverTimestamp, setLogLevel, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ------------------------------------------------------------------------------------
-        // --- SUBSTITUIÇÃO DA CONFIGURAÇÃO DO FIREBASE COM BASE NO SEU UPLOAD (image_a6a0de.png) ---
+        // --- CONFIGURAÇÃO DO FIREBASE (Copiado da sua imagem) ---
         // ------------------------------------------------------------------------------------
-        
-        // 1. Defina sua configuração estática do Firebase (Copiado da sua imagem, usando CDN/SDK)
+
+        // 1. Defina sua configuração estática do Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyDm16PR8c2BABa8X5HBYBMaUsTUa_HPbK", // Substitua pelo seu apiKey real se for diferente
+            apiKey: "AIzaSyDm16PR8c2BABa8X5HBYBMaUsTUa_HPbK", 
             authDomain: "formularios-7a70f.firebaseapp.com",
             projectId: "formularios-7a70f",
-            storageBucket: "formularios-7a70f.appspot.com",
+            // Nota: appspot.com é o domínio correto para Storage, conforme a prática.
+            storageBucket: "formularios-7a70f.appspot.com", 
             messagingSenderId: "1174368064194", 
             appId: "1:174368064194:web:32f0f10502c9f3039cb15b", 
+            // Seu measurementId não é necessário para Auth/Firestore, mas pode ser adicionado se precisar de Analytics
+            // measurementId: "G-FK5FCCZHJ2" 
         };
 
         // 2. Definimos um ID fixo para o "app" que será usado na estrutura de pastas do Firestore
-        // Este é o 'amigo-secreto-festa-2025' que deve ser espelhado nas Regras de Segurança.
         const appId = 'amigo-secreto-festa-2025'; 
         const initialAuthToken = null; 
-
-        // ------------------------------------------------------------------------------------
-        // --- FIM DA SUBSTITUIÇÃO ---
-        // ------------------------------------------------------------------------------------
 
         // --- Variáveis de Configuração da Festa (EDITÁVEIS) ---
         const FESTA_CONFIG = {
@@ -94,9 +96,9 @@
             pix: "123.456.789-00 (CPF da Organização)",
             valorAmigoSecreto: 30.00,
             contribuiçaoIndividual: "Cada um deve levar o que irá consumir: bebidas (cerveja, refri, água) e comida para churrasco (carne, linguiça, frango, pão de alho, arroz, sobremesa, etc.).",
-            // NOVO: ID do usuário que pode realizar o sorteio (PARA TESTES/ORGANIZADOR)
-            // LEMBRE-SE DE SUBSTITUIR 'FIXAR_AQUI_O_ID_DO_ORGANIZADOR' PELO SEU UID REAL.
-            ORGANIZER_ID: "FIXAR_AQUI_O_ID_DO_ORGANIZADOR", 
+            // !!! IMPORTANTE: SUBSTITUA ESTE VALOR PELO SEU UID REAL APÓS O LOGIN ANÔNIMO !!!
+            // O UID correto aparecerá em (ID: Carregando...) após o app conectar.
+            ORGANIZER_ID: "COLOQUE_AQUI_O_SEU_UID_DE_ORGANIZADOR", 
         };
 
         // Elementos UI
@@ -106,18 +108,17 @@
         const fullNameInput = document.getElementById('fullName');
         const numAcompanhantesInput = document.getElementById('numAcompanhantes');
         const valorTotalSpan = document.getElementById('valorTotal');
+        // IDs corrigidos para o HTML
         const authErrorBox = document.getElementById('authErrorBox');
-        const generalErrorBox = document.getElementById('generalErrorBox');
+        const generalErrorBox = document.getElementById('generalErrorBox'); 
         const loaderDiv = document.getElementById('loader');
         const connectingDiv = document.getElementById('connecting');
         const userIdDisplay = document.getElementById('userIdDisplay');
         const numAmigoSecretoAcompanhantesInput = document.getElementById('numAmigoSecretoAcompanhantes');
         const amigoSecretoAcompanhantesDiv = document.getElementById('amigoSecretoAcompanhantesDiv');
-        // NOVOS ELEMENTOS DO SORTEIO
         const drawButton = document.getElementById('drawButton');
         const checkDrawButton = document.getElementById('checkDrawButton');
         const myDrawResultDiv = document.getElementById('myDrawResult');
-        // NOVO: Container para os campos de nome dos acompanhantes
         const amigoSecretoNamesContainer = document.getElementById('amigoSecretoNamesContainer');
 
         let db;
@@ -151,9 +152,8 @@
         // Função para inicializar o Firebase
         async function initializeFirebase() {
             try {
-                // Checagem de configuração (Apenas para garantir, embora a injeção estática deva resolver)
                 if (Object.keys(firebaseConfig).length === 0 || !firebaseConfig.apiKey) {
-                    const message = "Erro: Configuração do Firebase não encontrada. Verifique se as chaves 'apiKey' e 'projectId' estão corretas.";
+                    const message = "Erro: Configuração do Firebase ausente. O app não terá armazenamento persistente.";
                     showError(authErrorBox, message);
                     console.error(message);
                     connectingDiv.textContent = "Erro de Configuração";
@@ -230,10 +230,10 @@
                 guests.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
                 renderGuests(guests, totalConfirmed);
-                checkAmigoSecretoStatus(); // Verifica o status do sorteio após carregar os dados
+                checkAmigoSecretoStatus();
             }, (error) => {
                 console.error("Erro ao carregar convidados:", error);
-                showError(generalErrorBox, `Erro ao carregar lista: ${error.message}`);
+                // Não precisa mostrar erro geral aqui, apenas se a operação de escrita falhar
             });
         }
 
@@ -253,7 +253,6 @@
                         <span class="font-medium text-indigo-700">${guest.fullName}</span> 
                         ${guest.numAcompanhantes > 0 ? `<span class="text-sm text-gray-500 ml-2">(+${guest.numAcompanhantes} Acompanhantes)</span>` : ''}
                         
-                        <!-- NOVO: Mostrar Amigo Secreto -->
                         ${(guest.totalAmigoSecreto || 0) > 0 ? `<div class="text-xs text-purple-600 mt-0.5"><i class="fas fa-gift"></i> ${guest.totalAmigoSecreto} no Amigo Secreto</div>` : ''}
 
                     </div>
@@ -300,7 +299,7 @@
 
             const totalAmigoSecreto = numAmigoSecretoAcompanhantes + 1; 
             
-            // NOVO: Coleta e valida os nomes dos acompanhantes
+            // Coleta e valida os nomes dos acompanhantes
             const amigoSecretoNameInputs = document.querySelectorAll('.amigo-secreto-name-input');
             const amigoSecretoCompanionNames = [];
 
@@ -319,7 +318,6 @@
                     return;
                 }
                 
-                // Garante que o número de acompanhantes no campo bate com o número de nomes coletados
                 if (amigoSecretoCompanionNames.length !== numAmigoSecretoAcompanhantes) {
                      showError(generalErrorBox, "Houve um erro na contagem dos participantes do Amigo Secreto.");
                      return;
@@ -338,7 +336,6 @@
                     numAcompanhantes: numAcompanhantes,
                     numAmigoSecretoAcompanhantes: numAmigoSecretoAcompanhantes,
                     totalAmigoSecreto: totalAmigoSecreto,
-                    // NOVO: Salva os nomes
                     amigoSecretoCompanionNames: amigoSecretoCompanionNames, 
                     valorTotal: (numAcompanhantes + 1) * FESTA_CONFIG.valorPorPessoa,
                     timestamp: serverTimestamp(),
@@ -380,11 +377,13 @@
                 numAmigoSecretoAcompanhantesInput.value = 0;
             }
 
-            // NOVO: Lógica de geração de campos de nome
+            // Lógica de geração de campos de nome
             amigoSecretoNamesContainer.innerHTML = '';
             
-            if (numAmigoSecreto > 0) {
-                for (let i = 0; i < numAmigoSecreto; i++) {
+            const numAcompanhantesParaAS = parseInt(numAmigoSecretoAcompanhantesInput.value) || 0;
+
+            if (numAcompanhantesParaAS > 0) {
+                for (let i = 0; i < numAcompanhantesParaAS; i++) {
                     const label = `Nome do Acompanhante ${i + 1} (Amigo Secreto):`;
                     const inputId = `amigoSecretoName_${i}`;
                     const nameField = document.createElement('div');
@@ -392,7 +391,7 @@
                     nameField.innerHTML = `
                         <label for="${inputId}" class="block text-xs font-medium text-yellow-800 mb-1">${label}</label>
                         <input type="text" id="${inputId}" data-index="${i}" required placeholder="Nome do Acompanhante"
-                               class="amigo-secreto-name-input block w-full px-3 py-1.5 border border-yellow-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-150 text-sm">
+                                class="amigo-secreto-name-input block w-full px-3 py-1.5 border border-yellow-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-150 text-sm">
                     `;
                     amigoSecretoNamesContainer.appendChild(nameField);
                 }
@@ -403,7 +402,7 @@
         window.checkAmigoSecretoStatus = async function() {
             
             // 1. Visibilidade do Botão de Sorteio (Apenas Organizador)
-            if (userId === FESTA_CONFIG.ORGANIZER_ID) {
+            if (userId === FESTA_CONFIG.ORGANIZER_ID && userId !== "COLOQUE_AQUI_O_SEU_UID_DE_ORGANIZADOR") {
                 drawButton.classList.remove('hidden');
             } else {
                 drawButton.classList.add('hidden');
@@ -423,11 +422,18 @@
                     drawButton.classList.add('bg-green-600');
                     drawButton.disabled = true;
                     // Tenta mostrar o resultado do usuário se o sorteio já ocorreu
-                    checkMyDraw(); 
+                    checkMyDraw(true); 
                 } else {
-                    drawButton.innerHTML = `<i class="fas fa-magic mr-2"></i> Realizar Sorteio (Organizador)`;
-                    drawButton.classList.add('bg-red-600', 'hover:bg-red-700');
-                    drawButton.disabled = false;
+                    // Se o organizador estiver logado, mostra o botão de sorteio
+                    if (userId === FESTA_CONFIG.ORGANIZER_ID && userId !== "COLOQUE_AQUI_O_SEU_UID_DE_ORGANIZADOR") {
+                         drawButton.innerHTML = `<i class="fas fa-magic mr-2"></i> Realizar Sorteio (Organizador)`;
+                         drawButton.classList.add('bg-red-600', 'hover:bg-red-700');
+                         drawButton.disabled = false;
+                    }
+                    // Oculta o resultado para não-participantes se o sorteio não começou
+                    myDrawResultDiv.classList.add('hidden');
+                    checkDrawButton.disabled = false;
+                    checkDrawButton.innerHTML = `<i class="fas fa-gift mr-2"></i> Quem Eu Tirei?`;
                 }
 
             } catch (e) {
@@ -458,7 +464,7 @@
                         // Participante principal
                         participants.push({ id: data.userId, name: data.fullName });
                         
-                        // NOVO: Adiciona acompanhantes usando os nomes reais salvos
+                        // Adiciona acompanhantes usando os nomes reais salvos
                         const companionNames = data.amigoSecretoCompanionNames || [];
                         companionNames.forEach((companionName, index) => {
                              // Crie IDs únicos para acompanhantes (usando o ID do principal + índice)
@@ -476,9 +482,9 @@
                     return;
                 }
 
-                // --- Lógica do Sorteio (Garantia de que ninguém tira a si mesmo) ---
+                // --- Lógica do Sorteio ---
                 let drawRawResults = {}; // { drawerId: targetId }
-                let drawResults = {};     // { drawerId: targetName }
+                let drawResults = {};    // { drawerId: targetName }
                 let successfulDraw = false;
                 let attempts = 0;
                 const maxAttempts = 100;
@@ -502,7 +508,6 @@
                         }
                         
                         // Garante que o participante principal não tire seu próprio acompanhante
-                        // Os IDs de acompanhantes têm o formato: 'userId_acomp_N'
                         if (target.id.startsWith(drawer.id) && target.id.includes('_acomp_')) {
                             successfulDraw = false;
                             break;
@@ -511,8 +516,6 @@
                         drawRawResults[drawer.id] = target.id;
                         drawResults[drawer.id] = target.name;
                     }
-                    
-                    // Se o sorteio falhou, tenta novamente.
                 }
 
                 if (!successfulDraw) {
@@ -520,7 +523,6 @@
                     checkAmigoSecretoStatus();
                     return;
                 }
-                // --- Fim da Lógica do Sorteio ---
                 
                 const drawDocRef = getAmigoSecretoDrawRef();
                 
@@ -544,24 +546,29 @@
         }
 
         // Função para exibir o resultado do sorteio para o usuário atual
-        window.checkMyDraw = async function() {
-            if (!isAuthReady || !userId) {
-                showError(generalErrorBox, "Aguarde a conexão com o servidor...");
-                return;
+        window.checkMyDraw = async function(isAutomatic = false) {
+            if (!isAutomatic) {
+                if (!isAuthReady || !userId) {
+                    showError(generalErrorBox, "Aguarde a conexão com o servidor...");
+                    return;
+                }
+                
+                checkDrawButton.disabled = true;
+                checkDrawButton.innerHTML = `<div class="loader mx-auto"></div> Buscando...`;
+                myDrawResultDiv.classList.add('hidden');
+                hideError(generalErrorBox);
             }
             
-            checkDrawButton.disabled = true;
-            checkDrawButton.innerHTML = `<div class="loader mx-auto"></div> Buscando...`;
-            myDrawResultDiv.classList.add('hidden');
-            hideError(generalErrorBox);
 
             try {
                 const drawDocRef = getAmigoSecretoDrawRef();
                 const drawDoc = await getDoc(drawDocRef); 
 
                 if (!drawDoc.exists() || !drawDoc.data().drawCompleted) {
-                    myDrawResultDiv.innerHTML = "O sorteio ainda não foi realizado pelo organizador.";
-                    myDrawResultDiv.classList.remove('hidden');
+                    if (!isAutomatic) {
+                         myDrawResultDiv.innerHTML = "O sorteio ainda não foi realizado pelo organizador.";
+                         myDrawResultDiv.classList.remove('hidden');
+                    }
                     return;
                 }
 
@@ -572,22 +579,25 @@
                 
                 // Resultado para o participante principal
                 if (targetName) {
-                    myDrawResultDiv.innerHTML = `🎉 Você tirou: <span class="text-indigo-800">${targetName}</span>! 🎉`;
+                    myDrawResultDiv.innerHTML = `🎉 Você tirou: <span class="text-indigo-800 font-bold">${targetName}</span>! 🎉`;
                     myDrawResultDiv.classList.remove('hidden');
                     return;
                 }
 
-                // Se o usuário não está diretamente no sorteio (pode ser um acompanhante em um navegador diferente)
-                // Ou se ele não está participando
-                myDrawResultDiv.innerHTML = "Seu resultado ainda não está disponível. Verifique se você está participando do Amigo Secreto.";
-                myDrawResultDiv.classList.remove('hidden');
+                // Caso o usuário esteja logado mas não tenha se confirmado no AS.
+                if (!isAutomatic) {
+                    myDrawResultDiv.innerHTML = "Seu resultado ainda não está disponível. Verifique se você está participando do Amigo Secreto.";
+                    myDrawResultDiv.classList.remove('hidden');
+                }
 
             } catch (e) {
                 console.error("Erro ao verificar sorteio:", e);
-                showError(generalErrorBox, `Erro ao verificar sorteio: ${e.message}`);
+                if (!isAutomatic) showError(generalErrorBox, `Erro ao verificar sorteio: ${e.message}`);
             } finally {
-                checkDrawButton.disabled = false;
-                checkDrawButton.innerHTML = `<i class="fas fa-gift mr-2"></i> Quem Eu Tirei?`;
+                if (!isAutomatic) {
+                    checkDrawButton.disabled = false;
+                    checkDrawButton.innerHTML = `<i class="fas fa-gift mr-2"></i> Quem Eu Tirei?`;
+                }
             }
         }
         
@@ -598,7 +608,7 @@
             document.getElementById('eventSubtitle').textContent = FESTA_CONFIG.subtitulo;
             document.getElementById('detailEndereco').innerHTML = `<span class="font-medium">Endereço:</span> ${FESTA_CONFIG.endereco}`;
             document.getElementById('detailData').innerHTML = `<span class="font-medium">Data/Hora:</span> ${FESTA_CONFIG.data}`;
-            document.getElementById('detailCardapio').innerHTML = `<span class="font-medium">Custo R$ 50,00:</span> ${FESTA_CONFIG.cardapio}`;
+            document.getElementById('detailCardapio').innerHTML = `<span class="font-medium">Custo ${formatCurrency(FESTA_CONFIG.valorPorPessoa)}:</span> ${FESTA_CONFIG.cardapio}`;
             document.getElementById('detailContribuicao').innerHTML = `<span class="font-medium">Sua Contribuição:</span> ${FESTA_CONFIG.contribuiçaoIndividual}`;
             document.getElementById('detailValor').innerHTML = `<span class="font-medium">Valor Base p/ Pessoa:</span> ${formatCurrency(FESTA_CONFIG.valorPorPessoa)}`;
             document.getElementById('detailPix').innerHTML = `<span class="font-medium">PIX:</span> ${FESTA_CONFIG.pix}`;
@@ -615,7 +625,6 @@
                 if (currentSelection < 0) {
                      numAmigoSecretoAcompanhantesInput.value = 0;
                 }
-                // NOVO: Chama toggle para atualizar os campos de nome
                 toggleAmigoSecretoAcompanhantes();
             });
             
@@ -629,148 +638,130 @@
 
         window.onload = setupUI;
     </script>
-    <!-- Ícones Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="card">
-        <!-- Cabeçalho (Editável no JS) -->
         <div class="header-bg p-6 rounded-t-xl text-white text-center">
             <div class="text-3xl md:text-4xl font-extrabold mb-1" id="eventTitle">
-                <!-- Preenchido pelo JS -->
-            </div>
+                </div>
             <p class="text-base font-light" id="eventSubtitle">
-                <!-- Preenchido pelo JS -->
-            </p>
-            <!-- NOVO: Mostrar o ID do usuário para o organizador poder configurar o ORGANIZER_ID -->
+                </p>
             <p id="userIdDisplay" class="text-xs mt-2 opacity-70">ID: Carregando...</p>
         </div>
 
         <div class="p-6 space-y-6">
             
-            <!-- Detalhes da Festa (Editáveis no JS) -->
             <h2 class="text-xl font-bold text-gray-800 border-b pb-2">Detalhes da Festa</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-gray-700 text-sm">
                 
                 <div class="detail-item text-indigo-600 sm:col-span-2">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span id="detailEndereco"><!-- Endereço --></span>
+                    <span id="detailEndereco"></span>
                 </div>
                 <div class="detail-item text-green-600">
                     <i class="far fa-calendar-alt"></i>
-                    <span id="detailData"><!-- Data/Hora --></span>
+                    <span id="detailData"></span>
                 </div>
                 <div class="detail-item text-red-600">
                     <i class="fas fa-money-bill-wave"></i>
-                    <span id="detailValor"><!-- Custo Base p/ Pessoa --></span>
+                    <span id="detailValor"></span>   
                 </div>
-                
-                <!-- Contribuição Individual (O que levar) -->
                 <div class="detail-item text-orange-600 sm:col-span-2">
                     <i class="fas fa-utensils"></i>
-                    <span id="detailContribuicao" class="font-medium leading-tight"><!-- Contribuição Individual --></span>
+                    <span id="detailContribuicao" class="italic"></span>
                 </div>
-
-                <!-- O que o R$ 50,00 cobre -->
-                <div class="detail-item text-gray-600 sm:col-span-2 text-xs italic">
+                <div class="detail-item text-red-600 sm:col-span-2">
                     <i class="fas fa-info-circle"></i>
-                    <span id="detailCardapio"><!-- O que o R$ 50,00 cobre --></span>
+                    <span id="detailCardapio"></span>
                 </div>
-
-                <div class="detail-item text-blue-600 sm:col-span-2">
+                <div class="detail-item text-blue-600">
                     <i class="fas fa-qrcode"></i>
-                    <span id="detailPix"><!-- PIX --></span>
+                    <span id="detailPix"></span>
                 </div>
                 <div class="detail-item text-purple-600">
                     <i class="fas fa-gift"></i>
-                    <span id="detailAmigo"><!-- Amigo Secreto --></span>
+                    <span id="detailAmigo"></span>
                 </div>
             </div>
 
-            <div id="connecting" class="mt-2 flex justify-center items-center text-sm text-gray-500">
-                <div class="loader mr-2"></div> Conectando ao sistema...
+            <div class="text-center mt-4">
+                 <p class="text-sm font-medium" id="connecting">Conectando ao Firebase...</p>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 hidden" role="alert" id="authErrorBox">
+                    <p class="text-xs font-semibold">Erro: Configuração do Firebase não encontrada. O app não terá armazenamento persistente.</p>
+                </div>
             </div>
 
-            <!-- Seção de Confirmação de Presença -->
-            <h2 class="text-xl font-bold text-gray-800 border-b pb-2 pt-4">Confirme Sua Presença e Custo</h2>
+            <h3 class="text-lg font-bold text-gray-800 border-b pb-2 mt-6">Confirme Sua Presença e Custo</h3>
 
-            <!-- Caixas de Erro -->
-            <div id="authErrorBox" class="p-3 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
-                <!-- Erro de Autenticação / Configuração -->
-            </div>
-            <div id="generalErrorBox" class="p-3 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
-                <!-- Erro Geral -->
-            </div>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-4 hidden" role="alert" id="generalErrorBox">
+                </div>
 
             <form id="rsvpForm" onsubmit="event.preventDefault(); confirmPresence();" class="space-y-4">
-                
                 <div>
                     <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">Seu Nome Completo (Participante Principal):</label>
-                    <input type="text" id="fullName" name="fullName" required placeholder="Ex: Rogério Silva" class="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                    <input type="text" id="fullName" required placeholder="Ex: Rogério Silva"
+                        class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
                 </div>
-                
-                <div>
-                    <label for="numAcompanhantes" class="block text-sm font-medium text-gray-700 mb-1">Número de Acompanhantes (Máx 10):</label>
-                    <input type="number" id="numAcompanhantes" name="numAcompanhantes" min="0" max="10" value="0" required class="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
-                </div>
-
-                <!-- CAMPO AMIGO SECRETO (MOSTRA/OCULTA DINAMICAMENTE) -->
-                <div id="amigoSecretoAcompanhantesDiv" class="hidden p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <label for="numAmigoSecretoAcompanhantes" class="block text-sm font-medium text-yellow-800 mb-1">
-                        Quantos dos seus acompanhantes irão participar do Amigo Secreto (R$ 30,00)?
-                    </label>
-                    <input type="number" id="numAmigoSecretoAcompanhantes" name="numAmigoSecretoAcompanhantes" min="0" value="0" class="block w-full px-4 py-2 border border-yellow-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-150">
-
-                    <!-- NOVO: Container para os nomes dos acompanhantes que participarão do sorteio -->
-                    <div id="amigoSecretoNamesContainer" class="mt-4 space-y-2">
-                        <!-- Campos de nome serão injetados aqui via JavaScript -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                         <label for="numAcompanhantes" class="block text-sm font-medium text-gray-700 mb-1">Número de Acompanhantes (Máx 10):</label>
+                         <input type="number" id="numAcompanhantes" min="0" max="10" value="0"
+                             class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                    </div>
+                    <div class="flex flex-col justify-end">
+                         <label class="block text-sm font-medium text-gray-700 mb-1">Valor Total a Pagar (PIX)</label>
+                         <div class="p-2 border border-indigo-200 bg-indigo-50 rounded-lg text-lg font-extrabold text-indigo-700 text-center">
+                             R$ <span id="valorTotal">50,00</span>
+                         </div>
                     </div>
                 </div>
 
-                <!-- Resumo do Custo -->
-                <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-lg text-indigo-800 font-semibold flex justify-between items-center">
-                    <span>Valor Total a Pagar (PIX):</span>
-                    <span class="text-xl font-extrabold" id="valorTotal">R$ 50,00</span>
+                <div id="amigoSecretoAcompanhantesDiv" class="hidden p-4 bg-yellow-50 border border-yellow-300 rounded-lg space-y-3">
+                     <p class="text-sm font-semibold text-yellow-900">
+                         <i class="fas fa-gift mr-2"></i> Quantos dos seus acompanhantes participarão do Amigo Secreto?
+                     </p>
+                     <div>
+                         <label for="numAmigoSecretoAcompanhantes" class="block text-sm font-medium text-yellow-800 mb-1">Acompanhantes no Amigo Secreto (você já está incluído):</label>
+                         <input type="number" id="numAmigoSecretoAcompanhantes" min="0" value="0"
+                            class="block w-full px-3 py-2 border border-yellow-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-150 text-sm">
+                     </div>
+                     <div id="amigoSecretoNamesContainer">
+                         </div>
                 </div>
                 
-                <button type="submit" id="confirmButton" class="w-full flex justify-center items-center px-4 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                <button type="submit" id="confirmButton"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
                     <i class="fas fa-check-circle mr-2"></i> Confirmar Presença
                 </button>
             </form>
 
-            <!-- Seção Amigo Secreto -->
-            <h2 class="text-xl font-bold text-gray-800 border-b pb-2 pt-4 flex justify-between items-center">
-                Amigo Secreto - Sorteio
-            </h2>
-
-            <div id="amigoSecretoActions" class="space-y-3">
-                <!-- Botão para o Organizador (Visibilidade controlada pelo JS) -->
-                <button onclick="window.performDraw()" id="drawButton" class="hidden w-full flex justify-center items-center px-4 py-3 text-base font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none transition duration-150 ease-in-out">
+            <h3 class="text-lg font-bold text-gray-800 border-b pb-2 mt-8">Amigo Secreto - Sorteio</h3>
+            <div class="space-y-4 pt-2">
+                
+                <button onclick="performDraw()" id="drawButton"
+                    class="hidden w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150">
                     <i class="fas fa-magic mr-2"></i> Realizar Sorteio (Organizador)
                 </button>
-                
-                <!-- Botão para qualquer participante -->
-                <button onclick="window.checkMyDraw()" id="checkDrawButton" class="w-full flex justify-center items-center px-4 py-3 text-base font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none transition duration-150 ease-in-out">
-                    <i class="fas fa-gift mr-2"></i> Quem Eu Tirei?
-                </button>
 
-                <div id="myDrawResult" class="hidden p-4 bg-purple-50 border border-purple-300 rounded-lg text-purple-800 text-center text-lg font-bold">
-                    <!-- Resultado do sorteio será exibido aqui -->
+                <div class="bg-purple-50 border border-purple-300 p-4 rounded-lg text-center space-y-3">
+                    <button onclick="checkMyDraw()" id="checkDrawButton"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150">
+                        <i class="fas fa-gift mr-2"></i> Quem Eu Tirei?
+                    </button>
+                    <div id="myDrawResult" class="text-sm font-semibold text-purple-900 mt-2 hidden">
+                        </div>
                 </div>
             </div>
 
-            <!-- Lista de Convidados -->
-            <h2 class="text-xl font-bold text-gray-800 border-b pb-2 pt-4">
-                Lista de Pessoas Confirmadas (<span id="guestCount">0</span> Pessoas)
-            </h2>
 
-            <div id="loader" class="flex justify-center py-8">
-                <div class="loader"></div>
-            </div>
+            <h3 class="text-lg font-bold text-gray-800 border-b pb-2 mt-8">Lista de Pessoas Confirmadas (<span id="guestCount">0</span> Pessoas)</h3>
+            <div id="guestList" class="min-h-[100px] relative">
+                <div class="absolute inset-0 flex justify-center items-center" id="loader">
+                    <div class="loader"></div>
+                </div>
+                </div>
 
-            <div id="guestList" class="min-h-[100px] border border-gray-200 rounded-lg overflow-hidden">
-                <!-- Lista de convidados em tempo real -->
-            </div>
         </div>
     </div>
 </body>
