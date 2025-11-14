@@ -34,7 +34,7 @@
             opacity: 0.9;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 2px, 4px, 0.06);
         }
-        /* Estilo para o modal de exportação */
+        /* Estilo para modais */
         .modal {
             position: fixed;
             z-index: 1000;
@@ -43,7 +43,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0,0,0,0.6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -61,6 +61,9 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .secret-santa-text {
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -76,6 +79,7 @@
 
         <!-- Conteúdo Principal -->
         <main class="p-6">
+            
             <!-- Detalhes do Evento -->
             <div class="space-y-4 mb-8 text-gray-700">
                 <h2 class="text-lg font-semibold border-b pb-2 text-gray-800">Detalhes</h2>
@@ -86,31 +90,26 @@
                         <span class="font-bold">Data:</span> 14 de dezembro (sábado)
                     </div>
                 </div>
-                
                 <div class="flex items-start">
                     <span class="mr-3 text-blue-500 text-xl" role="img" aria-label="clock">🕒</span>
                     <div>
                         <span class="font-bold">Horário:</span> das 09h às 22h
                     </div>
                 </div>
-                
-                <!-- NOVA LINHA: ENDEREÇO -->
                 <div class="flex items-start">
                     <span class="mr-3 text-red-700 text-xl" role="img" aria-label="pin">📍</span>
                     <div>
                         <span class="font-bold">Local:</span> Rua das Flores, 123 - Centro (Casa da Tia Wanda)
                     </div>
                 </div>
-                
                 <div class="flex items-start">
                     <span class="mr-3 text-yellow-600 text-xl" role="img" aria-label="event">💬</span>
                     <div>
                         <span class="font-bold">Evento:</span> Churrasco com "Amigo Chocolate" <span role="img" aria-label="diamond">💎</span>
                     </div>
                 </div>
-                
                 <div class="bg-blue-100 text-sm p-3 rounded-lg text-blue-800 mt-4 border-l-4 border-blue-500">
-                    <span role="img" aria-label="info">ℹ️</span> O sorteio do Amigo Chocolate será feito após a confirmação de todos os participantes. Não esqueçam de confirmar presença!
+                    <span role="img" aria-label="info">ℹ️</span> O sorteio do Amigo Chocolate será feito após a confirmação de todos os participantes.
                 </div>
             </div>
 
@@ -141,6 +140,18 @@
                     </button>
                 </form>
             </section>
+            
+            <!-- NOVO: SEÇÃO DE AMIGO SECRETO -->
+            <section class="mb-8 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <h2 class="text-xl font-semibold mb-3 text-gray-800 flex items-center">
+                    <span role="img" aria-label="gift" class="mr-2 text-2xl">🎁</span> Amigo Chocolate
+                </h2>
+                <div id="secret-santa-section">
+                    <!-- Conteúdo gerado pelo JS: Botão de Admin ou Botão de Participante -->
+                    <p class="text-center text-gray-500">Carregando status do sorteio...</p>
+                </div>
+            </section>
+
 
             <!-- Lista de Convidados Confirmados e Botão de Exportação -->
             <section>
@@ -173,14 +184,9 @@
     <div id="export-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <h3 class="text-xl font-bold mb-4 text-gray-800">Lista para Compartilhar</h3>
-            
-            <p class="text-sm text-gray-600 mb-3">
-                Copie o texto abaixo e cole no WhatsApp para enviar a lista de confirmados.
-            </p>
-            
+            <p class="text-sm text-gray-600 mb-3">Copie o texto abaixo e cole no WhatsApp para enviar a lista de confirmados.</p>
             <textarea id="export-text-area" rows="10" readonly 
                       class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-sm resize-none"></textarea>
-            
             <div class="mt-4 flex justify-end space-x-3">
                 <button onclick="closeExportModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg confirm-btn">
                     Fechar
@@ -192,13 +198,28 @@
             <p id="copy-status" class="text-sm text-center mt-2 text-green-600 font-medium" style="display: none;">Copiado com sucesso!</p>
         </div>
     </div>
+    
+    <!-- NOVO MODAL: Meu Amigo Secreto -->
+    <div id="secret-santa-modal" class="modal" style="display: none;">
+        <div class="modal-content text-center">
+            <h3 class="text-2xl font-extrabold mb-4 text-pink-600 secret-santa-text">Seu Amigo Chocolate é:</h3>
+            
+            <p id="santa-result" class="text-5xl font-bold text-gray-800 p-6 bg-red-100 rounded-xl mb-6 secret-santa-text">
+                Carregando...
+            </p>
+            
+            <button onclick="closeSecretSantaModal()" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg confirm-btn">
+                Fechar e Manter o Segredo <span role="img" aria-label="shush">🤫</span>
+            </button>
+        </div>
+    </div>
 
 
     <!-- FIREBASE AND APP LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // =========================================================================
         // CONFIGURAÇÃO DO FIREBASE (AS CHAVES FORAM INSERIDAS AQUI)
@@ -213,12 +234,22 @@
             measurementId: "G-FK5FCZ2HJ2"
         };
         // =========================================================================
+        
+        // VARIÁVEIS CHAVE PARA REUSO DO FORMULÁRIO:
+        const RSVPS_COLLECTION_NAME = 'rsvps-wanda-2025'; 
+        const SECRET_SANTA_COLLECTION_NAME = 'secret-santa-wanda-2025';
+        
+        // ID DO ADMINISTRADOR (APENAS O ADMIN PODE GERAR O SORTEIO)
+        // Você deve obter o seu userId e colar aqui.
+        // DICA: Confirme sua presença e olhe o console para ver o seu userId.
+        const ADMIN_ID = 'yW000000000000000000000000000000000000000000000000000000000000000'; // SUBSTITUA PELO SEU USER ID REAL
 
         let db;
         let auth;
         let userId = null;
         let isAuthReady = false;
-        let currentGuests = []; // Armazena a lista de convidados para a função de exportação
+        let currentGuests = []; 
+        let isSantaDrawn = false; // Flag para saber se o sorteio foi realizado
 
         // ELEMENTOS DA UI
         const STATUS_MESSAGE = document.getElementById('status-message');
@@ -231,11 +262,10 @@
         const EXPORT_MODAL = document.getElementById('export-modal');
         const EXPORT_TEXT_AREA = document.getElementById('export-text-area');
         const COPY_STATUS = document.getElementById('copy-status');
+        const SECRET_SANTA_SECTION = document.getElementById('secret-santa-section');
+        const SECRET_SANTA_MODAL = document.getElementById('secret-santa-modal');
+        const SANTA_RESULT = document.getElementById('santa-result');
 
-        // VARIÁVEL CHAVE PARA REUSO DO FORMULÁRIO:
-        // Se você for usar este formulário para um evento diferente, mude este nome
-        // Ex: 'rsvps-cha-de-bebe' ou 'confirmacoes-casamento'
-        const RSVPS_COLLECTION_NAME = 'rsvps-wanda-2025'; 
 
         // Função para mostrar mensagens de status
         function showStatus(message, type = 'error') {
@@ -260,21 +290,25 @@
                 db = getFirestore(app);
                 auth = getAuth(app); 
 
-                // Autenticação Anônima - Usamos para obter um userId único para cada visitante
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
                         userId = user.uid;
                         isAuthReady = true;
                         CONFIRM_BUTTON.disabled = false;
                         EXPORT_BUTTON.disabled = false;
+                        
+                        // **DICA PARA O ADMIN:** Imprime o userId no console
+                        console.log("Seu User ID (Para ser Admin):", userId); 
+
                         showStatus("Conectado ao banco de dados com sucesso. Você pode confirmar sua presença.", 'success');
-                        setupGuestsListener(); // Inicia o listener do Firestore após a autenticação
+                        
+                        setupGuestsListener(); 
+                        setupSantaListener(); // NOVO: Inicia o listener do Amigo Secreto
                     } else {
-                        // Se não estiver autenticado, tenta autenticar anonimamente
                         try {
                             await signInAnonymously(auth);
                         } catch (e) {
-                            showStatus(`Erro de Autenticação: ${e.message}. Por favor, verifique a aba "Método de login" no Console do Firebase e ative o login Anônimo.`, 'error');
+                            showStatus(`Erro de Autenticação: ${e.message}. Ative o login Anônimo no Firebase.`, 'error');
                             console.error("Erro na autenticação:", e);
                         }
                     }
@@ -287,16 +321,11 @@
         
         // Função para monitorar a lista de convidados em tempo real
         function setupGuestsListener() {
-            if (!db || !userId) {
-                console.warn("Firestore não inicializado ou userId ausente. Listener não iniciado.");
-                return;
-            }
+            if (!db || !userId) return;
 
-            // O caminho da coleção agora usa a variável customizada: /artifacts/{projectId}/public/data/{RSVPS_COLLECTION_NAME}
             const projectId = firebaseConfig.projectId;
             const rsvpsRef = collection(db, 'artifacts', projectId, 'public', 'data', RSVPS_COLLECTION_NAME);
             
-            // O onSnapshot monitora as mudanças na coleção em tempo real
             onSnapshot(rsvpsRef, (snapshot) => {
                 const guests = [];
                 snapshot.forEach((doc) => {
@@ -310,22 +339,112 @@
                     }
                 });
 
-                // Armazena a lista na variável global para uso na exportação
                 currentGuests = guests; 
-                
-                // Ordena por ordem de confirmação (mais recente primeiro)
                 currentGuests.sort((a, b) => b.timestamp - a.timestamp); 
                 
                 renderGuestsList(currentGuests);
+                updateSantaSection(); // Atualiza a seção do Amigo Secreto
             }, (error) => {
                 showStatus(`Erro ao carregar lista de convidados: ${error.message}`, 'error');
-                console.error("Erro no onSnapshot:", error);
+                console.error("Erro no onSnapshot (RSVP):", error);
             });
         }
+        
+        // NOVO: Função para monitorar o status do sorteio
+        function setupSantaListener() {
+            if (!db || !userId) return;
+
+            const projectId = firebaseConfig.projectId;
+            // O resultado do sorteio é um único documento na coleção 'secret-santa'
+            const santaDocRef = doc(db, 'artifacts', projectId, 'public', 'data', SECRET_SANTA_COLLECTION_NAME, 'result');
+            
+            onSnapshot(santaDocRef, (docSnapshot) => {
+                if (docSnapshot.exists()) {
+                    // O sorteio foi realizado
+                    isSantaDrawn = true;
+                    // O conteúdo do documento é o mapa de userId para quem ele tirou.
+                    window.santaMap = docSnapshot.data().map; 
+                } else {
+                    // O sorteio ainda não foi realizado
+                    isSantaDrawn = false;
+                    window.santaMap = {};
+                }
+                updateSantaSection();
+            }, (error) => {
+                showStatus(`Erro ao carregar status do sorteio: ${error.message}`, 'error');
+                console.error("Erro no onSnapshot (Santa):", error);
+            });
+        }
+        
+        // NOVO: Função para atualizar a seção do Amigo Secreto
+        function updateSantaSection() {
+            if (!isAuthReady || !userId) {
+                SECRET_SANTA_SECTION.innerHTML = '<p class="text-center text-gray-500">Aguardando autenticação...</p>';
+                return;
+            }
+
+            SECRET_SANTA_SECTION.innerHTML = '';
+            const totalGuests = currentGuests.length;
+            const isAdmin = userId === ADMIN_ID;
+
+            if (isAdmin) {
+                // VISÃO DO ADMINISTRADOR
+                if (isSantaDrawn) {
+                    SECRET_SANTA_SECTION.innerHTML = `
+                        <p class="text-lg font-medium text-green-700 mb-2">
+                            <span role="img" aria-label="done">✔️</span> Sorteio Realizado!
+                        </p>
+                        <p class="text-sm text-gray-600 mb-3">Total de ${totalGuests} participantes.</p>
+                        <button onclick="viewSantaResult()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg confirm-btn">
+                            <span role="img" aria-label="view">👁️</span> Ver Meu Amigo Secreto
+                        </button>
+                    `;
+                } else {
+                    // Sorteio não realizado
+                    if (totalGuests === 0 || totalGuests % 2 !== 0) {
+                        SECRET_SANTA_SECTION.innerHTML = `
+                            <p class="text-lg font-medium text-red-700 mb-2">
+                                <span role="img" aria-label="error">⚠️</span> O número de participantes (${totalGuests}) não é par.
+                            </p>
+                            <p class="text-sm text-gray-600">Aguarde mais ${totalGuests === 0 ? 2 : 1} pessoa(s) ou ajuste a lista para um número par para sortear.</p>
+                        `;
+                    } else {
+                        // Número de participantes é par e o sorteio pode ser feito
+                        SECRET_SANTA_SECTION.innerHTML = `
+                            <p class="text-lg font-medium text-green-700 mb-2">
+                                <span role="img" aria-label="ready">✅</span> ${totalGuests} participantes confirmados. Tudo pronto!
+                            </p>
+                            <button id="draw-button" onclick="handleSantaDraw()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-bold py-3 rounded-lg confirm-btn flex items-center justify-center">
+                                <span role="img" aria-label="draw">🎲</span> Gerar Sorteio Agora!
+                            </button>
+                        `;
+                    }
+                }
+            } else {
+                // VISÃO DO PARTICIPANTE COMUM
+                if (isSantaDrawn) {
+                     SECRET_SANTA_SECTION.innerHTML = `
+                        <p class="text-lg font-medium text-green-700 mb-2">
+                            <span role="img" aria-label="done">✔️</span> O sorteio foi realizado!
+                        </p>
+                        <button onclick="viewSantaResult()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg confirm-btn">
+                            <span role="img" aria-label="view">👁️</span> Ver Meu Amigo Secreto
+                        </button>
+                    `;
+                } else {
+                    SECRET_SANTA_SECTION.innerHTML = `
+                        <p class="text-lg font-medium text-gray-700">
+                            <span role="img" aria-label="hourglass">⏳</span> O sorteio ainda não foi realizado pelo administrador.
+                        </p>
+                    `;
+                }
+            }
+        }
+
 
         // Função para renderizar a lista de convidados na UI
         function renderGuestsList(guests) {
-            GUESTS_LIST.innerHTML = ''; // Limpa a lista atual
+            GUESTS_LIST.innerHTML = ''; 
             LOADING_GUESTS.style.display = 'none';
 
             GUEST_COUNT.textContent = guests.length;
@@ -380,15 +499,14 @@
                 return;
             }
 
-            // Desabilita o botão e mostra o spinner
             CONFIRM_BUTTON.disabled = true;
             document.getElementById('button-text').style.display = 'none';
             document.getElementById('loading-spinner').style.display = 'inline-block';
             STATUS_MESSAGE.style.display = 'none';
 
             try {
-                // Usa o ID do usuário autenticado anonimamente como ID do documento.
                 const projectId = firebaseConfig.projectId;
+                // Armazena o nome e o userId para usar no sorteio
                 const docRef = doc(db, 'artifacts', projectId, 'public', 'data', RSVPS_COLLECTION_NAME, userId);
                 
                 await setDoc(docRef, {
@@ -398,14 +516,11 @@
                 });
 
                 showStatus(`Obrigado, ${name}! Sua presença foi confirmada!`, 'success');
-                // Não limpa o campo, assim o usuário vê que seu nome continua lá
-                // FULL_NAME_INPUT.value = ''; 
 
             } catch (e) {
                 showStatus(`Erro ao salvar a confirmação: ${e.message}`, 'error');
                 console.error("Erro ao salvar no Firestore:", e);
             } finally {
-                // Restaura o botão
                 CONFIRM_BUTTON.disabled = false;
                 document.getElementById('button-text').style.display = 'inline';
                 document.getElementById('loading-spinner').style.display = 'none';
@@ -413,16 +528,142 @@
         }
         
         // ===============================================
+        // LÓGICA DO AMIGO SECRETO (NOVO)
+        // ===============================================
+
+        // Função principal para gerar o sorteio
+        window.handleSantaDraw = async function() {
+            if (userId !== ADMIN_ID) {
+                showStatus("Você não tem permissão para realizar o sorteio.", 'error');
+                return;
+            }
+            
+            const participants = currentGuests;
+            if (participants.length === 0 || participants.length % 2 !== 0) {
+                showStatus(`Não é possível sortear. O número de participantes (${participants.length}) deve ser par.`, 'error');
+                return;
+            }
+            
+            const drawButton = document.getElementById('draw-button');
+            drawButton.disabled = true;
+            drawButton.innerHTML = 'Sorteando... <svg class="animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+            
+            try {
+                const map = generateSecretSantaMap(participants);
+                
+                const projectId = firebaseConfig.projectId;
+                const santaDocRef = doc(db, 'artifacts', projectId, 'public', 'data', SECRET_SANTA_COLLECTION_NAME, 'result');
+                
+                // Armazena o mapa no Firestore
+                await setDoc(santaDocRef, {
+                    map: map,
+                    drawnBy: userId,
+                    timestamp: serverTimestamp(),
+                    guestCount: participants.length
+                });
+
+                showStatus(`Sorteio realizado com sucesso para ${participants.length} participantes!`, 'success');
+            } catch (e) {
+                showStatus(`Erro ao gerar sorteio: ${e.message}`, 'error');
+                console.error("Erro ao gerar sorteio:", e);
+            } finally {
+                drawButton.disabled = false;
+                drawButton.innerHTML = '<span role="img" aria-label="draw">🎲</span> Gerar Sorteio Agora!';
+            }
+        }
+
+        // Algoritmo de sorteio que garante que ninguém tire a si mesmo
+        function generateSecretSantaMap(participants) {
+            const giverIds = participants.map(p => p.id);
+            const receiverIds = [...giverIds]; // Copia a lista de recebedores
+            const namesMap = participants.reduce((acc, p) => ({ ...acc, [p.id]: p.name }), {});
+            const santaMap = {};
+
+            let attempts = 0;
+            const MAX_ATTEMPTS = 100;
+
+            while (attempts < MAX_ATTEMPTS) {
+                let shuffledReceivers = shuffle(receiverIds);
+                let isValid = true;
+                let currentDraw = {};
+
+                for (let i = 0; i < giverIds.length; i++) {
+                    const giverId = giverIds[i];
+                    const receiverId = shuffledReceivers[i];
+                    
+                    // Condição de falha: Se a pessoa tirar a si mesma, o sorteio é inválido
+                    if (giverId === receiverId) {
+                        isValid = false;
+                        break;
+                    }
+                    currentDraw[giverId] = {
+                        receiverId: receiverId,
+                        receiverName: namesMap[receiverId]
+                    };
+                }
+
+                if (isValid) {
+                    // Sorteio válido encontrado
+                    giverIds.forEach(id => {
+                        santaMap[id] = currentDraw[id].receiverName;
+                    });
+                    return santaMap;
+                }
+                attempts++;
+            }
+            
+            // Se falhar após MAX_ATTEMPTS, é improvável, mas pode acontecer
+            throw new Error("Não foi possível gerar um sorteio válido após 100 tentativas. Tente novamente.");
+        }
+
+        // Função utilitária para embaralhar um array (Algoritmo Fisher-Yates)
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            let newArray = [...array];
+
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [newArray[currentIndex], newArray[randomIndex]] = [newArray[randomIndex], newArray[currentIndex]];
+            }
+
+            return newArray;
+        }
+
+        // Função para abrir o modal do Amigo Secreto
+        window.viewSantaResult = function() {
+            if (!isSantaDrawn) {
+                showStatus("O sorteio ainda não foi realizado!", 'info');
+                return;
+            }
+            
+            if (!window.santaMap || !window.santaMap[userId]) {
+                showStatus("Seu nome não foi encontrado no sorteio. Confirme sua presença.", 'error');
+                return;
+            }
+            
+            const drawnName = window.santaMap[userId];
+            SANTA_RESULT.textContent = drawnName;
+            SECRET_SANTA_MODAL.style.display = 'flex';
+        }
+
+        // Função para fechar o modal do Amigo Secreto
+        window.closeSecretSantaModal = function() {
+            SECRET_SANTA_MODAL.style.display = 'none';
+        }
+
+        // ===============================================
         // FUNÇÕES DO MODAL DE EXPORTAÇÃO
         // ===============================================
 
         // Função para gerar o texto formatado para compartilhamento
         function generateExportText() {
             const confirmedNames = currentGuests.map(guest => guest.name);
+            // Ordena por nome para facilitar a visualização da lista
+            confirmedNames.sort((a, b) => a.localeCompare(b)); 
             const listItems = confirmedNames.map((name, index) => `${index + 1}. ${name}`).join('\n');
             const total = currentGuests.length;
             
-            // Tenta obter a URL atual da página
             const currentUrl = window.location.href; 
 
             return `
@@ -432,7 +673,7 @@
 📍 *Local:* Rua das Flores, 123 - Centro
 📅 *Data:* 14 de dezembro (sábado)
 
-*Lista de Convidados:*
+*Lista de Convidados (em ordem alfabética):*
 ${listItems}
 
 ---------------------------------------
@@ -440,7 +681,7 @@ Confirme sua presença: ${currentUrl}
 `;
         }
 
-        // Função para abrir o modal
+        // Função para abrir o modal de exportação
         window.showExportModal = function() {
             const exportText = generateExportText();
             EXPORT_TEXT_AREA.value = exportText.trim();
@@ -448,35 +689,31 @@ Confirme sua presença: ${currentUrl}
             COPY_STATUS.style.display = 'none';
         }
 
-        // Função para fechar o modal
+        // Função para fechar o modal de exportação
         window.closeExportModal = function() {
             EXPORT_MODAL.style.display = 'none';
         }
 
-        // Função para copiar o texto (compatível com iFrame)
+        // Função para copiar o texto
         window.copyExportText = function() {
             EXPORT_TEXT_AREA.select();
-            EXPORT_TEXT_AREA.setSelectionRange(0, 99999); // Para mobile
+            EXPORT_TEXT_AREA.setSelectionRange(0, 99999); 
 
             try {
-                // Tenta usar a API moderna (não funciona em iFrames de terceiros)
                 navigator.clipboard.writeText(EXPORT_TEXT_AREA.value).then(() => {
                     COPY_STATUS.textContent = 'Copiado com sucesso! Agora é só colar no WhatsApp.';
                     COPY_STATUS.style.display = 'block';
                 }).catch(() => {
-                    // Fallback para o método antigo (que geralmente funciona em iFrames)
                     document.execCommand('copy');
                     COPY_STATUS.textContent = 'Copiado com sucesso! Agora é só colar no WhatsApp.';
                     COPY_STATUS.style.display = 'block';
                 });
             } catch (err) {
-                // Fallback final
                 document.execCommand('copy');
                 COPY_STATUS.textContent = 'Copiado com sucesso! Agora é só colar no WhatsApp.';
                 COPY_STATUS.style.display = 'block';
             }
 
-            // Esconde a mensagem de status após 3 segundos
             setTimeout(() => {
                 COPY_STATUS.style.display = 'none';
             }, 3000);
