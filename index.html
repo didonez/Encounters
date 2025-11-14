@@ -75,10 +75,14 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'amigo-secreto-festa-2025'; 
         
         let firebaseConfig = {};
+        let isConfigValid = false;
         try {
             // Tenta obter a configuração do ambiente
             if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                 firebaseConfig = JSON.parse(__firebase_config);
+                if (firebaseConfig.apiKey) {
+                    isConfigValid = true;
+                }
             }
         } catch (e) {
             console.error("Erro ao processar __firebase_config:", e);
@@ -97,7 +101,7 @@
             pix: "123.456.789-00 (CPF da Organização)",
             valorAmigoSecreto: 30.00,
             contribuiçaoIndividual: "Cada um deve levar o que irá consumir: bebidas (cerveja, refri, água) e comida para churrasco (carne, linguiça, frango, pão de alho, arroz, sobremesa, etc.).",
-            // ID DO ORGANIZADOR FORNECIDO PELO USUÁRIO
+            // ID DO ORGANIZADOR FORNECIDO PELO USUÁRIO (Mude este ID para o seu próprio ID de usuário)
             ORGANIZER_ID: "uUrSomDeD5RF1Q1DyIPSES6pt0c2", 
         };
 
@@ -149,11 +153,14 @@
         }
 
         // Função para resetar o botão de confirmação
-        function resetConfirmButton(isConfirmed = false) {
-             confirmButton.disabled = isConfirmed;
-             confirmButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'bg-red-600', 'hover:bg-red-700', 'bg-green-600', 'hover:bg-green-700');
+        function resetConfirmButton(isConfirmed = false, isErrorState = false) {
+             confirmButton.disabled = isConfirmed || isErrorState;
+             confirmButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'bg-red-600', 'hover:bg-red-700', 'bg-green-600', 'hover:bg-green-700', 'bg-gray-400');
              
-             if (isConfirmed) {
+             if (isErrorState) {
+                confirmButton.classList.add('bg-gray-400');
+                confirmButton.innerHTML = `Falha de Conexão`;
+             } else if (isConfirmed) {
                  confirmButton.classList.add('bg-green-600', 'hover:bg-green-700');
                  confirmButton.innerHTML = `<i class="fas fa-check-circle mr-2"></i> Presença Confirmada!`;
              } else {
@@ -167,16 +174,13 @@
         async function initializeFirebase() {
             try {
                 // CORREÇÃO CRÍTICA: Verifica se a configuração essencial está presente
-                if (!firebaseConfig || !firebaseConfig.apiKey) {
+                if (!isConfigValid) {
                     const message = "🚨 Erro: Configuração do Firebase ausente. O app não terá armazenamento persistente. Por favor, verifique a configuração.";
                     showError(authErrorBox, message);
                     console.error(message);
                     connectingDiv.textContent = "Falha de Conexão (Sem Persistência)";
                     loaderDiv.classList.add('hidden');
-                    // Desabilita o botão de confirmação, pois o salvamento falhará
-                    confirmButton.disabled = true;
-                    confirmButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-                    confirmButton.classList.add('bg-gray-400');
+                    resetConfirmButton(false, true); // Desabilita o botão em estado de erro
                     return; 
                 }
 
@@ -193,9 +197,9 @@
                         userIdDisplay.textContent = `ID: ${userId}`;
                         connectingDiv.classList.add('hidden');
                         
-                        await checkMyRsvp(); 
+                        await checkMyRsvp(); // Tenta carregar o RSVP após a autenticação
                         
-                        loadGuests();
+                        loadGuests(); // Inicia o listener de convidados
                     } else {
                         try {
                             if (initialAuthToken) {
@@ -209,6 +213,7 @@
                             console.error("Erro na autenticação:", e);
                             showError(authErrorBox, `Erro de Autenticação: ${e.message}`);
                             connectingDiv.textContent = "Falha na Conexão";
+                            resetConfirmButton(false, true); // Desabilita o botão em estado de erro
                         }
                     }
                 });
@@ -217,6 +222,7 @@
                 console.error("Erro fatal ao inicializar o Firebase:", e);
                 showError(authErrorBox, `Erro fatal na aplicação: ${e.message}`);
                 connectingDiv.textContent = "Falha Crítica";
+                resetConfirmButton(false, true); // Desabilita o botão em estado de erro
             }
         }
 
@@ -235,8 +241,10 @@
         
         // Função para checar e preencher o formulário se o RSVP já foi feito
         window.checkMyRsvp = async function() {
-             // Retorna se o Firebase não está pronto
-             if (!isAuthReady || !db || !userId) return;
+             // CORREÇÃO: Não tenta executar se o Firebase não estiver pronto
+             if (!isAuthReady || !db || !userId) {
+                 return;
+             }
 
              try {
                 const docRef = getMyRsvpDocRef();
@@ -265,6 +273,8 @@
                 }
              } catch (e) {
                  console.error("Erro ao verificar RSVP:", e);
+                 // Se falhar aqui, não desabilita o botão, apenas garante que não está travado no loader
+                 resetConfirmButton(false);
              }
         }
 
@@ -272,7 +282,7 @@
         // Carrega a lista de convidados em tempo real
         function loadGuests() {
             const rsvpsRef = getRsvpsCollectionRef();
-            // Retorna se o Firebase não está pronto
+            // CORREÇÃO: Retorna se o Firebase não está pronto
             if (!isAuthReady || !db || !rsvpsRef) {
                 loaderDiv.classList.add('hidden');
                 guestListDiv.innerHTML = '<p class="text-center text-red-500 italic p-4">Não foi possível carregar a lista: Falha de conexão com o Firebase.</p>';
@@ -298,6 +308,8 @@
                 checkAmigoSecretoStatus();
             }, (error) => {
                 console.error("Erro ao carregar convidados:", error);
+                loaderDiv.classList.add('hidden');
+                guestListDiv.innerHTML = '<p class="text-center text-red-500 italic p-4">Erro de leitura do banco de dados.</p>';
             });
         }
 
@@ -334,8 +346,10 @@
         window.confirmPresence = async function() {
             hideError(generalErrorBox);
 
+            // CORREÇÃO: Não tenta executar se o Firebase não estiver pronto
             if (!db || !isAuthReady || !userId) {
-                showError(generalErrorBox, "Erro: Conexão com o Firebase não estabelecida. Por favor, recarregue a página ou verifique a configuração.");
+                showError(generalErrorBox, "Erro: Conexão com o Firebase não estabelecida. Por favor, verifique a configuração e recarregue a página.");
+                resetConfirmButton(false, true); // Garante que o botão está em estado de erro
                 return;
             }
 
@@ -412,7 +426,7 @@
                 // Sucesso: Botão verde
                 resetConfirmButton(true);
                 // Atualiza o formulário com dados salvos
-                checkMyRsvp();
+                // Não precisa chamar checkMyRsvp aqui, onSnapshot fará isso
                 
             } catch (e) {
                 console.error("Erro ao confirmar presença:", e);
@@ -706,7 +720,7 @@
             // 3. Calcular valor inicial e visibilidade inicial
             calculateTotal(); 
             toggleAmigoSecretoAcompanhantes(); 
-            resetConfirmButton(false); // Garante que o botão comece no estado normal
+            resetConfirmButton(false, !isConfigValid); // Estado inicial: normal ou de erro se não houver config
 
             // 4. Iniciar Firebase
             initializeFirebase();
