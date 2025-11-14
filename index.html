@@ -3,750 +3,537 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confraternização do Wanda 2025</title>
-    <!-- Carrega Tailwind CSS para estilização moderna e responsiva -->
+    <title>Amigo Secreto Flexível</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#DC2626',
+                        'secondary': '#FBBF24',
+                        'background-dark': '#1F2937',
+                        'card-light': '#F9FAFB',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7fafc; /* Cor de fundo suave */
+            background-color: #F3F4F6; /* Fundo claro para contraste */
         }
-        .container-card {
-            max-width: 500px;
+        .container {
+            max-width: 900px;
+        }
+        .card {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            margin: 2rem auto;
-            background-color: white;
-            border-radius: 1rem;
-            overflow: hidden;
         }
-        .header-gradient {
-            /* Cores alegres de confraternização */
-            background: linear-gradient(135deg, #ff9a8b 0%, #ff6a88 50%, #ff8c8c 100%);
+        .draw-result {
+            background: linear-gradient(135deg, #DC2626 0%, #FBBF24 100%);
             color: white;
-            padding: 3rem 1.5rem 1.5rem;
-            text-align: center;
-        }
-        .confirm-btn {
-            transition: all 0.3s ease;
-        }
-        .confirm-btn:hover {
-            opacity: 0.9;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 2px, 4px, 0.06);
-        }
-        /* Estilo para modais */
-        .modal {
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            padding: 20px;
+            padding: 1.5rem;
             border-radius: 0.75rem;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: fadeIn 0.3s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .secret-santa-text {
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <div id="app" class="container-card">
-        <!-- Cabeçalho com Gradient -->
-        <div class="header-gradient">
-            <p class="text-4xl mb-2">
-                <span role="img" aria-label="confetti">🎉</span> CONFRATERNIZAÇÃO DO WANDA 2025 <span role="img" aria-label="gift">🎁</span>
-            </p>
-            <h1 class="text-xl font-light">Você é nosso convidado especial!</h1>
-        </div>
+    <div id="app" class="container mx-auto p-4 md:p-8">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-primary mb-6 text-center">Amigo Secreto Flexível</h1>
 
-        <!-- Conteúdo Principal -->
-        <main class="p-6">
-            
-            <!-- NOVO: Seção de ADMIN_ID para facilitar a cópia -->
-            <div id="admin-info-section" style="display:none;" class="mb-6 p-3 bg-red-100 rounded-lg border-l-4 border-red-500">
-                <p class="font-bold text-red-800 mb-1">Passo 1: Copie seu Admin ID</p>
-                <input type="text" id="admin-user-id-display" readonly 
-                       class="w-full p-2 border border-red-300 rounded-lg text-xs bg-white cursor-text"
-                       placeholder="Seu ID aparecerá aqui após a conexão">
-                <p class="text-xs text-red-700 mt-1">Copie o ID acima, substitua a variável `ADMIN_ID` no código e recarregue a página.</p>
-            </div>
-            <!-- Fim da Seção de ADMIN_ID -->
-            
-            <!-- Detalhes do Evento -->
-            <div class="space-y-4 mb-8 text-gray-700">
-                <h2 class="text-lg font-semibold border-b pb-2 text-gray-800">Detalhes</h2>
-                
-                <div class="flex items-start">
-                    <span class="mr-3 text-red-500 text-xl" role="img" aria-label="calendar">🗓️</span>
-                    <div>
-                        <span class="font-bold">Data:</span> 14 de dezembro (sábado)
-                    </div>
-                </div>
-                <div class="flex items-start">
-                    <span class="mr-3 text-blue-500 text-xl" role="img" aria-label="clock">🕒</span>
-                    <div>
-                        <span class="font-bold">Horário:</span> das 09h às 22h
-                    </div>
-                </div>
-                <div class="flex items-start">
-                    <span class="mr-3 text-red-700 text-xl" role="img" aria-label="pin">📍</span>
-                    <div>
-                        <span class="font-bold">Local:</span> Rua das Flores, 123 - Centro (Casa da Tia Wanda)
-                    </div>
-                </div>
-                <div class="flex items-start">
-                    <span class="mr-3 text-yellow-600 text-xl" role="img" aria-label="event">💬</span>
-                    <div>
-                        <span class="font-bold">Evento:</span> Churrasco com "Amigo Chocolate" <span role="img" aria-label="diamond">💎</span>
-                    </div>
-                </div>
-                <div class="bg-blue-100 text-sm p-3 rounded-lg text-blue-800 mt-4 border-l-4 border-blue-500">
-                    <span role="img" aria-label="info">ℹ️</span> O sorteio do Amigo Chocolate será feito após a confirmação de todos os participantes.
-                </div>
-            </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <!-- Seção de Confirmação de Presença -->
-            <section class="mb-8">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Confirme Sua Presença</h2>
-                
-                <!-- Mensagem de Status (Erro/Sucesso) -->
-                <div id="status-message" class="p-3 mb-4 rounded-lg font-medium" style="display: none;"></div>
+            <!-- Coluna de Cadastro -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl card h-fit">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">1. Seu Cadastro e Acompanhantes</h2>
+                <p id="userIdDisplay" class="text-xs text-gray-500 mb-4 break-words"></p>
 
-                <form id="rsvp-form" onsubmit="handleRsvp(event)">
+                <form id="participantForm" onsubmit="event.preventDefault(); saveParticipant();">
                     <div class="mb-4">
-                        <label for="full-name" class="block text-gray-700 text-sm font-medium mb-1">Seu Nome Completo:</label>
-                        <input type="text" id="full-name" required placeholder="Ex: Rogério Silva" 
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" 
-                                maxlength="80"
-                                aria-describedby="status-message">
+                        <label for="participantName" class="block text-sm font-medium text-gray-700 mb-1">Seu Nome (Participante Principal do Sorteio)</label>
+                        <input type="text" id="participantName" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition duration-150"
+                            placeholder="Ex: Ana Silva">
                     </div>
 
-                    <button type="submit" id="confirm-button" class="confirm-btn w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg flex items-center justify-center disabled:opacity-50" disabled>
-                        <svg id="loading-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display: none;">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span id="button-text">
-                            <span role="img" aria-label="check mark">✅</span> Confirmar Presença
-                        </span>
+                    <!-- Seção de Acompanhantes -->
+                    <div class="mb-6 border p-4 rounded-lg bg-card-light">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3 flex justify-between items-center">
+                            2. Acompanhantes (Apenas RSVP - Não Entram no Sorteio)
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-3">Liste aqui os nomes dos seus convidados (cônjuge, filhos) para a contagem total de presenças.</p>
+                        
+                        <div id="guestInputsContainer" class="space-y-3">
+                            <!-- Inputs de acompanhantes serão adicionados aqui -->
+                        </div>
+
+                        <button type="button" onclick="addGuestInput()" class="mt-4 w-full bg-secondary hover:bg-yellow-600 text-white font-medium py-2 rounded-lg transition duration-150 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            Adicionar Acompanhante
+                        </button>
+                    </div>
+                    
+                    <button type="submit" id="saveButton"
+                        class="w-full bg-primary hover:bg-red-700 text-white font-bold py-3 rounded-lg transition duration-150 disabled:bg-gray-400">
+                        Salvar Minha Presença e Acompanhantes
                     </button>
+                    <p id="saveMessage" class="text-sm text-green-600 mt-2 hidden text-center">Cadastro salvo com sucesso!</p>
                 </form>
-            </section>
-            
-            <!-- SEÇÃO DE AMIGO SECRETO -->
-            <section class="mb-8 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <h2 class="text-xl font-semibold mb-3 text-gray-800 flex items-center">
-                    <span role="img" aria-label="gift" class="mr-2 text-2xl">🎁</span> Amigo Chocolate
-                </h2>
-                <div id="secret-santa-section">
-                    <!-- Conteúdo gerado pelo JS: Botão de Admin ou Botão de Participante -->
-                    <p class="text-center text-gray-500">Carregando status do sorteio...</p>
-                </div>
-            </section>
-
-
-            <!-- Lista de Convidados Confirmados e Botão de Exportação -->
-            <section>
-                <div class="flex justify-between items-center mb-4 border-t pt-4">
-                    <h2 class="text-xl font-semibold text-gray-800">
-                        Lista de Convidados (<span id="confirmed-count">0</span> Confirmados)
-                    </h2>
-                    <button id="export-button" onclick="showExportModal()" 
-                            class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-2 px-3 rounded-lg disabled:opacity-50 confirm-btn" disabled>
-                        <span role="img" aria-label="share">🔗</span> Exportar Lista
-                    </button>
-                </div>
-                
-                <div id="guests-list" class="space-y-2">
-                    <!-- A lista será populada pelo JavaScript -->
-                    <p id="loading-guests" class="text-center text-gray-500">
-                        <svg class="animate-spin mx-auto h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Carregando lista...
-                    </p>
-                </div>
-            </section>
-
-        </main>
-    </div>
-    
-    <!-- Modal de Exportação -->
-    <div id="export-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h3 class="text-xl font-bold mb-4 text-gray-800">Lista para Compartilhar</h3>
-            <p class="text-sm text-gray-600 mb-3">Copie o texto abaixo e cole no WhatsApp para enviar a lista de confirmados.</p>
-            <textarea id="export-text-area" rows="10" readonly 
-                      class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-sm resize-none"></textarea>
-            <div class="mt-4 flex justify-end space-x-3">
-                <button onclick="closeExportModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg confirm-btn">
-                    Fechar
-                </button>
-                <button onclick="copyExportText()" id="copy-button" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg confirm-btn">
-                    Copiar
-                </button>
             </div>
-            <p id="copy-status" class="text-sm text-center mt-2 text-green-600 font-medium" style="display: none;">Copiado com sucesso!</p>
+
+            <!-- Coluna de Participantes e Sorteio -->
+            <div class="lg:col-span-1 space-y-6">
+                
+                <!-- Lista de Participantes -->
+                <div class="bg-white p-6 rounded-xl card">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Lista de Presenças</h2>
+                    <p class="text-sm text-gray-600 mb-4">
+                        <span class="font-bold text-primary" id="totalParticipantsCount">0</span> Participantes no Sorteio /
+                        <span class="font-bold text-primary" id="totalAttendeesCount">0</span> Total de Presenças (RSVP)
+                    </p>
+                    
+                    <ul id="participantsList" class="space-y-3">
+                        <li class="text-gray-500 italic">Nenhum participante cadastrado.</li>
+                    </ul>
+                </div>
+
+                <!-- Sorteio -->
+                <div class="bg-white p-6 rounded-xl card">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">3. Realizar Sorteio</h2>
+                    <p class="text-sm text-gray-600 mb-4">O sorteio só deve ser feito uma única vez por um organizador quando todos estiverem cadastrados.</p>
+                    <button onclick="confirmAndPerformDraw()" id="drawButton"
+                        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition duration-150 disabled:bg-gray-400"
+                        disabled>
+                        Sortear Amigo Secreto
+                    </button>
+                    
+                    <div id="drawResultContainer" class="mt-6 hidden">
+                        <h3 class="text-xl font-bold text-gray-700 mb-3">Resultado do Sorteio:</h3>
+                        <p id="resultDisplay" class="draw-result"></p>
+                    </div>
+                </div>
+
+            </div>
         </div>
-    </div>
-    
-    <!-- MODAL: Meu Amigo Secreto -->
-    <div id="secret-santa-modal" class="modal" style="display: none;">
-        <div class="modal-content text-center">
-            <h3 class="text-2xl font-extrabold mb-4 text-pink-600 secret-santa-text">Seu Amigo Chocolate é:</h3>
-            
-            <p id="santa-result" class="text-5xl font-bold text-gray-800 p-6 bg-red-100 rounded-xl mb-6 secret-santa-text">
-                Carregando...
-            </p>
-            
-            <button onclick="closeSecretSantaModal()" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg confirm-btn">
-                Fechar e Manter o Segredo <span role="img" aria-label="shush">🤫</span>
-            </button>
+
+        <div id="alertModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 items-center justify-center p-4">
+            <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Confirmação Necessária</h3>
+                <p id="alertMessage" class="text-gray-600 mb-6">Tem certeza que deseja realizar o sorteio?</p>
+                <div class="flex justify-end space-x-3">
+                    <button onclick="closeAlert()" class="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-100 transition">Cancelar</button>
+                    <button onclick="performDraw(true)" id="alertConfirmButton" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-red-700 transition">Confirmar</button>
+                </div>
+            </div>
         </div>
+
     </div>
 
-
-    <!-- FIREBASE AND APP LOGIC -->
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, runTransaction, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // =========================================================================
-        // CONFIGURAÇÃO DO FIREBASE (AS CHAVES FORAM INSERIDAS AQUI)
-        // =========================================================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyDrml6PR8c2BABa8X5HbYBmAUsTua_hPbk",
-            authDomain: "formularios-7a70f.firebaseapp.com",
-            projectId: "formularios-7a70f",
-            storageBucket: "formularios-7a70f.firebasestorage.app",
-            messagingSenderId: "174368064194",
-            appId: "1:174368064194:web:32f0f10502c9f3039cb15b",
-            measurementId: "G-FK5FCZ2HJ2"
-        };
-        // =========================================================================
-        
-        // VARIÁVEIS CHAVE PARA REUSO DO FORMULÁRIO:
-        const RSVPS_COLLECTION_NAME = 'rsvps-wanda-2025'; 
-        const SECRET_SANTA_COLLECTION_NAME = 'secret-santa-wanda-2025';
-        
-        // ID DO ADMINISTRADOR (APENAS O ADMIN PODE GERAR O SORTEIO)
-        // PASSO 2: Cole o seu ID copiado aqui, substituindo o valor de exemplo.
-        const ADMIN_ID = 'uUrSomDeD5RF1Q1DyIPSES6pt0c2'; // SUBSTITUA PELO SEU USER ID REAL!
+        // Set Firebase log level to debug for development purposes (optional)
+        setLogLevel('Debug');
 
-        let db;
-        let auth;
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, db, auth;
         let userId = null;
         let isAuthReady = false;
-        let currentGuests = []; 
-        let isSantaDrawn = false; 
 
-        // ELEMENTOS DA UI
-        const STATUS_MESSAGE = document.getElementById('status-message');
-        const CONFIRM_BUTTON = document.getElementById('confirm-button');
-        const EXPORT_BUTTON = document.getElementById('export-button');
-        const GUEST_COUNT = document.getElementById('confirmed-count');
-        const GUESTS_LIST = document.getElementById('guests-list');
-        const FULL_NAME_INPUT = document.getElementById('full-name');
-        const LOADING_GUESTS = document.getElementById('loading-guests');
-        const EXPORT_MODAL = document.getElementById('export-modal');
-        const EXPORT_TEXT_AREA = document.getElementById('export-text-area');
-        const COPY_STATUS = document.getElementById('copy-status');
-        const SECRET_SANTA_SECTION = document.getElementById('secret-santa-section');
-        const SECRET_SANTA_MODAL = document.getElementById('secret-santa-modal');
-        const SANTA_RESULT = document.getElementById('santa-result');
-        const ADMIN_INFO_SECTION = document.getElementById('admin-info-section');
-        const ADMIN_USER_ID_DISPLAY = document.getElementById('admin-user-id-display');
+        window.db = db; // Expose for functions
 
+        const PARTICIPANTS_COLLECTION = 'participants';
+        const DRAW_COLLECTION = 'draw_status';
 
-        // Função para mostrar mensagens de status
-        function showStatus(message, type = 'error') {
-            STATUS_MESSAGE.textContent = message;
-            STATUS_MESSAGE.style.display = 'block';
-            STATUS_MESSAGE.className = 'p-3 mb-4 rounded-lg font-medium';
-            if (type === 'error') {
-                STATUS_MESSAGE.classList.add('bg-red-100', 'text-red-800', 'border', 'border-red-400');
-            } else if (type === 'success') {
-                STATUS_MESSAGE.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-400');
-            } else { // info
-                STATUS_MESSAGE.classList.add('bg-blue-100', 'text-blue-800', 'border', 'border-blue-400');
-            }
-        }
+        // --- Firebase Initialization and Auth ---
+        if (firebaseConfig) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
 
-        // Função de inicialização do Firebase e Autenticação
-        async function initializeFirebase() {
-            setLogLevel('debug');
-            
-            try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app); 
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        isAuthReady = true;
-                        CONFIRM_BUTTON.disabled = false;
-                        EXPORT_BUTTON.disabled = false;
-                        
-                        // NOVO: Exibe o ID na UI se o ID temporário for usado
-                        if (ADMIN_ID === 'yW000000000000000000000000000000000000000000000000000000000000000') {
-                            ADMIN_INFO_SECTION.style.display = 'block';
-                            ADMIN_USER_ID_DISPLAY.value = userId;
-                        } else if (userId === ADMIN_ID) {
-                             // Se o ID já foi configurado corretamente, mas você está logado, 
-                             // ele exibe a seção para mostrar que a configuração está correta.
-                            ADMIN_INFO_SECTION.style.display = 'block';
-                            ADMIN_USER_ID_DISPLAY.value = userId + " (ADMIN OK)";
-                            ADMIN_USER_ID_DISPLAY.classList.remove('bg-red-100');
-                            ADMIN_USER_ID_DISPLAY.classList.add('bg-green-100', 'text-green-800');
-                            document.querySelector('#admin-info-section p.font-bold').textContent = 'Configuração de Admin OK.';
-                            document.querySelector('#admin-info-section p.text-xs').textContent = 'Você tem acesso ao sorteio.';
-                        } else {
-                            ADMIN_INFO_SECTION.style.display = 'none';
-                        }
-                        
-                        showStatus("Conectado ao banco de dados com sucesso. Você pode confirmar sua presença.", 'success');
-                        
-                        setupGuestsListener(); 
-                        setupSantaListener();
-                    } else {
-                        try {
-                            await signInAnonymously(auth);
-                        } catch (e) {
-                            showStatus(`Erro de Autenticação: ${e.message}. Ative o login Anônimo no Firebase.`, 'error');
-                            console.error("Erro na autenticação:", e);
-                        }
+            // 1. Authentication Setup
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    isAuthReady = true;
+                    console.log("Authenticated User ID:", userId);
+                    document.getElementById('userIdDisplay').textContent = `Seu ID de Participante: ${userId}`;
+                    
+                    // Proceed to load data and set up listeners
+                    if (db) {
+                        loadInitialData();
+                        setupRealtimeListeners();
                     }
-                });
-            } catch (e) {
-                showStatus(`Erro ao inicializar o Firebase: ${e.message}`, 'error');
-                console.error("Erro ao inicializar o Firebase:", e);
-            }
+                } else {
+                    // Sign in anonymously if no token is available
+                    try {
+                         if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Authentication error:", error);
+                    }
+                }
+            });
+        } else {
+            console.error("Firebase config is missing.");
         }
-        
-        // Função para monitorar a lista de convidados em tempo real
-        function setupGuestsListener() {
-            if (!db || !userId) return;
 
-            const projectId = firebaseConfig.projectId;
-            const rsvpsRef = collection(db, 'artifacts', projectId, 'public', 'data', RSVPS_COLLECTION_NAME);
-            
-            onSnapshot(rsvpsRef, (snapshot) => {
-                const guests = [];
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if (data.name) {
-                        guests.push({
-                            id: doc.id,
-                            name: data.name,
-                            timestamp: data.timestamp ? data.timestamp.toDate() : new Date(),
+        // --- Firestore References ---
+
+        // Path for public data (participants, draw status) shared among all users of this app
+        const getPublicCollectionRef = (collectionName) => {
+            return collection(db, `artifacts/${appId}/public/data/${collectionName}`);
+        };
+
+        const getParticipantDocRef = (uid) => {
+            if (!db) return null;
+            return doc(getPublicCollectionRef(PARTICIPANTS_COLLECTION), uid);
+        };
+
+        const getDrawStatusDocRef = () => {
+             if (!db) return null;
+            return doc(getPublicCollectionRef(DRAW_COLLECTION), 'current_draw');
+        };
+
+        // --- Data Loading and Listeners ---
+
+        function setupRealtimeListeners() {
+            if (!db || !isAuthReady) return;
+
+            // Listener for all participants
+            onSnapshot(getPublicCollectionRef(PARTICIPANTS_COLLECTION), (snapshot) => {
+                const participants = [];
+                snapshot.forEach(doc => {
+                    participants.push(doc.data());
+                });
+                displayParticipants(participants);
+                updateDrawButtonState(participants);
+            });
+
+            // Listener for draw status (to display the result if the draw has happened)
+            onSnapshot(getDrawStatusDocRef(), (docSnapshot) => {
+                const drawStatus = docSnapshot.data();
+                displayDrawResult(drawStatus);
+            });
+        }
+
+        async function loadInitialData() {
+            if (!userId || !db || !isAuthReady) return;
+            // Load current user's data for editing
+            try {
+                const docRef = getParticipantDocRef(userId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('participantName').value = data.nome || '';
+                    
+                    // Load Acompanhantes
+                    const guestInputsContainer = document.getElementById('guestInputsContainer');
+                    guestInputsContainer.innerHTML = ''; // Clear previous inputs
+                    
+                    if (Array.isArray(data.acompanhantes)) {
+                        data.acompanhantes.forEach(guestName => {
+                            addGuestInput(guestName);
                         });
                     }
-                });
-
-                currentGuests = guests; 
-                currentGuests.sort((a, b) => b.timestamp - a.timestamp); 
-                
-                renderGuestsList(currentGuests);
-                updateSantaSection(); 
-            }, (error) => {
-                showStatus(`Erro ao carregar lista de convidados: ${error.message}`, 'error');
-                console.error("Erro no onSnapshot (RSVP):", error);
-            });
-        }
-        
-        // Função para monitorar o status do sorteio
-        function setupSantaListener() {
-            if (!db || !userId) return;
-
-            const projectId = firebaseConfig.projectId;
-            const santaDocRef = doc(db, 'artifacts', projectId, 'public', 'data', SECRET_SANTA_COLLECTION_NAME, 'result');
-            
-            onSnapshot(santaDocRef, (docSnapshot) => {
-                if (docSnapshot.exists()) {
-                    isSantaDrawn = true;
-                    window.santaMap = docSnapshot.data().map; 
-                } else {
-                    isSantaDrawn = false;
-                    window.santaMap = {};
                 }
-                updateSantaSection();
-            }, (error) => {
-                showStatus(`Erro ao carregar status do sorteio: ${error.message}`, 'error');
-                console.error("Erro no onSnapshot (Santa):", error);
-            });
+            } catch (error) {
+                console.error("Error loading initial data:", error);
+            }
         }
         
-        // Função para atualizar a seção do Amigo Secreto
-        function updateSantaSection() {
-            if (!isAuthReady || !userId) {
-                SECRET_SANTA_SECTION.innerHTML = '<p class="text-center text-gray-500">Aguardando autenticação...</p>';
+        // --- UI Functions ---
+
+        window.addGuestInput = (guestName = '') => {
+            const container = document.getElementById('guestInputsContainer');
+            const guestIndex = container.children.length;
+
+            const div = document.createElement('div');
+            div.className = 'flex space-x-2 items-center';
+            div.innerHTML = `
+                <input type="text" 
+                    name="guest-${guestIndex}" 
+                    value="${guestName}" 
+                    placeholder="Nome do Acompanhante ${guestIndex + 1}"
+                    class="flex-grow px-3 py-1 border border-gray-300 rounded-lg focus:ring-secondary focus:border-secondary transition duration-150 text-sm">
+                <button type="button" 
+                        onclick="removeGuestInput(this)" 
+                        class="text-red-500 hover:text-red-700 p-1 rounded-full transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            `;
+            container.appendChild(div);
+        };
+
+        window.removeGuestInput = (button) => {
+            button.closest('div').remove();
+        };
+
+        function displayParticipants(participants) {
+            const list = document.getElementById('participantsList');
+            const totalParticipantsCountEl = document.getElementById('totalParticipantsCount');
+            const totalAttendeesCountEl = document.getElementById('totalAttendeesCount');
+            list.innerHTML = '';
+
+            let totalAttendees = 0;
+
+            if (participants.length === 0) {
+                list.innerHTML = '<li class="text-gray-500 italic">Nenhum participante cadastrado.</li>';
+                totalParticipantsCountEl.textContent = 0;
+                totalAttendeesCountEl.textContent = 0;
                 return;
             }
 
-            SECRET_SANTA_SECTION.innerHTML = '';
-            const totalGuests = currentGuests.length;
-            const isAdmin = userId === ADMIN_ID;
+            participants.forEach(p => {
+                const li = document.createElement('li');
+                const mainParticipantName = p.nome || `Participante ${p.uid.substring(0, 4)}`;
+                const guests = Array.isArray(p.acompanhantes) ? p.acompanhantes.filter(n => n.trim() !== '') : [];
+                const guestCount = guests.length;
+                
+                totalAttendees += 1; // Count primary participant
+                totalAttendees += guestCount; // Count guests
 
-            if (isAdmin) {
-                // VISÃO DO ADMINISTRADOR
-                if (isSantaDrawn) {
-                    SECRET_SANTA_SECTION.innerHTML = `
-                        <p class="text-lg font-medium text-green-700 mb-2">
-                            <span role="img" aria-label="done">✔️</span> Sorteio Realizado para ${totalGuests} pessoas!
-                        </p>
-                        <p class="text-sm text-gray-600 mb-3">Clique abaixo para conferir o seu amigo.</p>
-                        <button onclick="viewSantaResult()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg confirm-btn">
-                            <span role="img" aria-label="view">👁️</span> Ver Meu Amigo Secreto
-                        </button>
-                    `;
+                let detailText = '';
+                if (guestCount > 0) {
+                    detailText = ` (+ ${guestCount} Acompanhante${guestCount > 1 ? 's' : ''}: ${guests.join(', ')})`;
+                    li.className = 'p-3 bg-red-50 border-l-4 border-primary rounded-lg';
                 } else {
-                    // Sorteio não realizado
-                    if (totalGuests === 0 || totalGuests % 2 !== 0) {
-                        SECRET_SANTA_SECTION.innerHTML = `
-                            <p class="text-lg font-medium text-red-700 mb-2">
-                                <span role="img" aria-label="error">⚠️</span> O número de participantes (${totalGuests}) é **ímpar**.
-                            </p>
-                            <p class="text-sm text-gray-600">Aguarde mais ${totalGuests === 0 ? 2 : 1} pessoa(s) ou ajuste a lista para um número par para sortear.</p>
-                        `;
-                    } else {
-                        // Número de participantes é par e o sorteio pode ser feito
-                        SECRET_SANTA_SECTION.innerHTML = `
-                            <p class="text-lg font-medium text-green-700 mb-2">
-                                <span role="img" aria-label="ready">✅</span> ${totalGuests} participantes confirmados. Tudo pronto!
-                            </p>
-                            <button id="draw-button" onclick="handleSantaDraw()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-bold py-3 rounded-lg confirm-btn flex items-center justify-center">
-                                <span role="img" aria-label="draw">🎲</span> Gerar Sorteio Agora!
-                            </button>
-                        `;
-                    }
+                     li.className = 'p-3 bg-gray-50 border-l-4 border-gray-300 rounded-lg';
+                }
+
+                li.innerHTML = `<span class="font-medium text-gray-800">${mainParticipantName}</span> <span class="text-sm text-gray-600">${detailText}</span>`;
+                list.appendChild(li);
+            });
+
+            totalParticipantsCountEl.textContent = participants.length;
+            totalAttendeesCountEl.textContent = totalAttendees;
+        }
+        
+        function updateDrawButtonState(participants) {
+             const drawButton = document.getElementById('drawButton');
+             // The draw can only happen if there are at least 2 participants (the primary ones)
+             drawButton.disabled = participants.length < 2; 
+             drawButton.textContent = participants.length < 2 
+                ? `Mínimo 2 Participantes (Atual: ${participants.length})` 
+                : 'Sortear Amigo Secreto';
+        }
+
+        function displayDrawResult(drawStatus) {
+            const resultContainer = document.getElementById('drawResultContainer');
+            const resultDisplay = document.getElementById('resultDisplay');
+            
+            // Check if the draw was performed
+            if (drawStatus && drawStatus.isDrawn && userId) {
+                // Find the result specific to the current user
+                const result = drawStatus.results.find(r => r.giverId === userId);
+
+                if (result) {
+                    // Display the result
+                    resultContainer.classList.remove('hidden');
+                    resultDisplay.innerHTML = `🥳 <span class="font-extrabold text-xl">Você tirou: ${result.receiverName}</span> 🎉`;
+                } else {
+                    // Should not happen if the user is in the draw
+                    resultContainer.classList.add('hidden');
                 }
             } else {
-                // VISÃO DO PARTICIPANTE COMUM
-                const hasConfirmed = currentGuests.some(g => g.id === userId);
-                
-                if (!hasConfirmed) {
-                     SECRET_SANTA_SECTION.innerHTML = `
-                        <p class="text-lg font-medium text-gray-700">
-                           <span role="img" aria-label="confirm">✍️</span> Confirme sua presença para participar do sorteio!
-                        </p>
-                    `;
-                } else if (isSantaDrawn) {
-                     SECRET_SANTA_SECTION.innerHTML = `
-                        <p class="text-lg font-medium text-green-700 mb-2">
-                            <span role="img" aria-label="done">✔️</span> O sorteio foi realizado!
-                        </p>
-                        <button onclick="viewSantaResult()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg confirm-btn">
-                            <span role="img" aria-label="view">👁️</span> Ver Meu Amigo Secreto
-                        </button>
-                    `;
-                } else {
-                    SECRET_SANTA_SECTION.innerHTML = `
-                        <p class="text-lg font-medium text-gray-700">
-                            <span role="img" aria-label="hourglass">⏳</span> O sorteio ainda não foi realizado pelo administrador.
-                        </p>
-                    `;
-                }
+                 resultContainer.classList.add('hidden');
             }
         }
 
 
-        // Função para renderizar a lista de convidados na UI
-        function renderGuestsList(guests) {
-            GUESTS_LIST.innerHTML = ''; 
-            LOADING_GUESTS.style.display = 'none';
+        // --- Firestore Write Functions ---
 
-            GUEST_COUNT.textContent = guests.length;
+        window.saveParticipant = async () => {
+            if (!userId || !db || !isAuthReady) return;
 
-            if (guests.length === 0) {
-                GUESTS_LIST.innerHTML = '<p class="text-center text-gray-500 italic">Nenhuma presença confirmada ainda. Seja o primeiro!</p>';
-                return;
-            }
-
-            guests.forEach((guest) => {
-                const listItem = document.createElement('div');
-                listItem.className = 'flex items-center justify-between p-3 border-b last:border-b-0 hover:bg-gray-50 rounded-lg';
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'font-medium text-gray-800 truncate';
-                nameSpan.textContent = guest.name;
-
-                const timeSpan = document.createElement('span');
-                timeSpan.className = 'text-xs text-gray-500 ml-2 flex-shrink-0';
-                timeSpan.textContent = formatTimeAgo(guest.timestamp);
-
-                listItem.appendChild(nameSpan);
-                listItem.appendChild(timeSpan);
-                GUESTS_LIST.appendChild(listItem);
-            });
-        }
-
-        // Função utilitária para formatar a hora da confirmação
-        function formatTimeAgo(date) {
-            const now = new Date();
-            const diffInSeconds = Math.floor((now - date) / 1000);
-
-            if (diffInSeconds < 60) return 'agora mesmo';
-            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} min atrás`;
-            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} horas atrás`;
+            const nameInput = document.getElementById('participantName');
+            const name = nameInput.value.trim();
             
-            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-        }
-
-        // Função de confirmação de presença (chamada pelo formulário)
-        window.handleRsvp = async function(event) {
-            event.preventDefault();
-            
-            if (!isAuthReady || !userId) {
-                showStatus("Aguarde a conexão com o banco de dados...", 'info');
+            if (name === '') {
+                nameInput.focus();
                 return;
             }
 
-            const name = FULL_NAME_INPUT.value.trim();
-            if (!name) {
-                showStatus("Por favor, insira seu nome completo.", 'error');
-                return;
-            }
+            // Collect guest names
+            const guestInputsContainer = document.getElementById('guestInputsContainer');
+            const guestInputs = guestInputsContainer.querySelectorAll('input[type="text"]');
+            const acompanhantes = Array.from(guestInputs)
+                .map(input => input.value.trim())
+                .filter(guestName => guestName !== ''); // Filter out empty guest names
 
-            CONFIRM_BUTTON.disabled = true;
-            document.getElementById('button-text').style.display = 'none';
-            document.getElementById('loading-spinner').style.display = 'inline-block';
-            STATUS_MESSAGE.style.display = 'none';
+            const participantData = {
+                uid: userId,
+                nome: name,
+                acompanhantes: acompanhantes, // Array of guest names
+                timestamp: Date.now()
+            };
 
             try {
-                const projectId = firebaseConfig.projectId;
-                const docRef = doc(db, 'artifacts', projectId, 'public', 'data', RSVPS_COLLECTION_NAME, userId);
+                await setDoc(getParticipantDocRef(userId), participantData);
+                console.log("Participant saved with ID:", userId);
                 
-                await setDoc(docRef, {
-                    name: name,
-                    timestamp: serverTimestamp(),
-                    userId: userId, 
-                });
-
-                showStatus(`Obrigado, ${name}! Sua presença foi confirmada!`, 'success');
+                const message = document.getElementById('saveMessage');
+                message.textContent = "Cadastro salvo com sucesso!";
+                message.classList.remove('hidden');
+                setTimeout(() => message.classList.add('hidden'), 3000);
 
             } catch (e) {
-                showStatus(`Erro ao salvar a confirmação: ${e.message}`, 'error');
-                console.error("Erro ao salvar no Firestore:", e);
-            } finally {
-                CONFIRM_BUTTON.disabled = false;
-                document.getElementById('button-text').style.display = 'inline';
-                document.getElementById('loading-spinner').style.display = 'none';
+                console.error("Error adding/updating document: ", e);
+                const message = document.getElementById('saveMessage');
+                message.textContent = "Erro ao salvar o cadastro.";
+                message.classList.remove('hidden');
+                message.classList.add('text-red-600');
             }
-        }
-        
-        // ===============================================
-        // LÓGICA DO AMIGO SECRETO 
-        // ===============================================
+        };
 
-        // Função principal para gerar o sorteio
-        window.handleSantaDraw = async function() {
-            if (userId !== ADMIN_ID) {
-                showStatus("Você não tem permissão para realizar o sorteio.", 'error');
+
+        window.confirmAndPerformDraw = () => {
+            document.getElementById('alertModal').classList.remove('hidden');
+            document.getElementById('alertMessage').textContent = "Tem certeza que deseja realizar o sorteio? Esta ação não pode ser desfeita e exibirá os resultados para todos os participantes.";
+            document.getElementById('alertConfirmButton').onclick = () => performDraw(true);
+        };
+
+        window.closeAlert = () => {
+            document.getElementById('alertModal').classList.add('hidden');
+        };
+
+        // This function MUST be called by the confirm button inside the modal
+        window.performDraw = async (isConfirmed) => {
+            closeAlert(); // Close the modal immediately
+
+            if (!isConfirmed || !db || !isAuthReady) {
                 return;
             }
-            
-            const participants = currentGuests;
-            if (participants.length === 0 || participants.length % 2 !== 0) {
-                showStatus(`Não é possível sortear. O número de participantes (${participants.length}) deve ser par.`, 'error');
-                return;
-            }
-            
-            const drawButton = document.getElementById('draw-button');
-            drawButton.disabled = true;
-            drawButton.innerHTML = 'Sorteando... <svg class="animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+            const drawDocRef = getDrawStatusDocRef();
+            const participantsCollectionRef = getPublicCollectionRef(PARTICIPANTS_COLLECTION);
             
             try {
-                const map = generateSecretSantaMap(participants);
-                
-                const projectId = firebaseConfig.projectId;
-                const santaDocRef = doc(db, 'artifacts', projectId, 'public', 'data', SECRET_SANTA_COLLECTION_NAME, 'result');
-                
-                await setDoc(santaDocRef, {
-                    map: map,
-                    drawnBy: userId,
-                    timestamp: serverTimestamp(),
-                    guestCount: participants.length
-                });
-
-                showStatus(`Sorteio realizado com sucesso para ${participants.length} participantes!`, 'success');
-            } catch (e) {
-                showStatus(`Erro ao gerar sorteio: ${e.message}`, 'error');
-                console.error("Erro ao gerar sorteio:", e);
-            } finally {
-                drawButton.disabled = false;
-                drawButton.innerHTML = '<span role="img" aria-label="draw">🎲</span> Gerar Sorteio Agora!';
-            }
-        }
-
-        // Algoritmo de sorteio que garante que ninguém tire a si mesmo
-        function generateSecretSantaMap(participants) {
-            const giverIds = participants.map(p => p.id);
-            const receiverIds = [...giverIds]; 
-            const namesMap = participants.reduce((acc, p) => ({ ...acc, [p.id]: p.name }), {});
-            const santaMap = {};
-
-            let attempts = 0;
-            const MAX_ATTEMPTS = 100;
-
-            while (attempts < MAX_ATTEMPTS) {
-                let shuffledReceivers = shuffle(receiverIds);
-                let isValid = true;
-                let currentDraw = {};
-
-                for (let i = 0; i < giverIds.length; i++) {
-                    const giverId = giverIds[i];
-                    const receiverId = shuffledReceivers[i];
-                    
-                    if (giverId === receiverId) {
-                        isValid = false;
-                        break;
+                await runTransaction(db, async (transaction) => {
+                    const drawSnap = await transaction.get(drawDocRef);
+                    if (drawSnap.exists() && drawSnap.data().isDrawn) {
+                        // Draw already performed, prevent re-execution
+                        console.log("Draw already performed. Aborting transaction.");
+                        return;
                     }
-                    currentDraw[giverId] = {
-                        receiverId: receiverId,
-                        receiverName: namesMap[receiverId]
-                    };
-                }
 
-                if (isValid) {
-                    giverIds.forEach(id => {
-                        santaMap[id] = currentDraw[id].receiverName;
+                    // 1. Get ALL primary participants eligible for the draw
+                    const participantsSnap = await getDocs(participantsCollectionRef);
+                    let participants = [];
+                    participantsSnap.forEach(doc => {
+                        const data = doc.data();
+                        // Only include participants who have a name (prevent partial entries)
+                        if (data.nome && data.nome.trim() !== '') {
+                            participants.push({ uid: doc.id, nome: data.nome });
+                        }
                     });
-                    return santaMap;
-                }
-                attempts++;
-            }
-            
-            throw new Error("Não foi possível gerar um sorteio válido após 100 tentativas. Tente novamente.");
-        }
 
-        // Função utilitária para embaralhar um array (Algoritmo Fisher-Yates)
-        function shuffle(array) {
-            let currentIndex = array.length, randomIndex;
-            let newArray = [...array];
+                    if (participants.length < 2) {
+                        throw new Error("Mínimo de 2 participantes é necessário para o sorteio.");
+                    }
 
-            while (currentIndex !== 0) {
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex--;
-                [newArray[currentIndex], newArray[randomIndex]] = [newArray[randomIndex], newArray[currentIndex]];
-            }
+                    // 2. Perform the Secret Santa logic
+                    const givers = [...participants];
+                    let receivers = [...participants];
+                    let drawResults = [];
+                    let attempts = 0;
+                    const maxAttempts = 100;
 
-            return newArray;
-        }
+                    // Fisher-Yates shuffle algorithm
+                    function shuffle(array) {
+                        for (let i = array.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [array[i], array[j]] = [array[j], array[i]];
+                        }
+                    }
 
-        // Função para abrir o modal do Amigo Secreto
-        window.viewSantaResult = function() {
-            if (!isSantaDrawn) {
-                showStatus("O sorteio ainda não foi realizado!", 'info');
-                return;
-            }
-            
-            if (!window.santaMap || !window.santaMap[userId]) {
-                showStatus("Seu nome não foi encontrado no sorteio. Confirme sua presença.", 'error');
-                return;
-            }
-            
-            const drawnName = window.santaMap[userId];
-            SANTA_RESULT.textContent = drawnName;
-            SECRET_SANTA_MODAL.style.display = 'flex';
-        }
+                    // Perform the draw until a valid non-self-gifting assignment is found
+                    let successfulDraw = false;
+                    
+                    while (!successfulDraw && attempts < maxAttempts) {
+                        attempts++;
+                        shuffle(receivers); // Shuffle the potential receivers
+                        drawResults = [];
+                        successfulDraw = true;
 
-        // Função para fechar o modal do Amigo Secreto
-        window.closeSecretSantaModal = function() {
-            SECRET_SANTA_MODAL.style.display = 'none';
-        }
+                        for (let i = 0; i < givers.length; i++) {
+                            const giver = givers[i];
+                            const receiver = receivers[i];
 
-        // ===============================================
-        // FUNÇÕES DO MODAL DE EXPORTAÇÃO
-        // ===============================================
+                            // Check the main rule: A person cannot draw themselves
+                            if (giver.uid === receiver.uid) {
+                                successfulDraw = false;
+                                break; // Restart the loop if self-draw occurs
+                            }
+                            
+                            // Check the secondary rule: Ensure no cycles of length 2 (A->B, B->A)
+                            // This check is complex and often skipped for simplicity, but a simple shuffle is usually sufficient 
+                            // to avoid most issues in small groups. The main check is the self-draw.
 
-        // Função para gerar o texto formatado para compartilhamento
-        function generateExportText() {
-            const confirmedNames = currentGuests.map(guest => guest.name);
-            confirmedNames.sort((a, b) => a.localeCompare(b)); 
-            const listItems = confirmedNames.map((name, index) => `${index + 1}. ${name}`).join('\n');
-            const total = currentGuests.length;
-            
-            const currentUrl = window.location.href; 
+                            drawResults.push({
+                                giverId: giver.uid,
+                                giverName: giver.nome,
+                                receiverId: receiver.uid,
+                                receiverName: receiver.nome
+                            });
+                        }
+                    }
+                    
+                    if (!successfulDraw) {
+                         throw new Error("Não foi possível realizar um sorteio válido após várias tentativas. Tente novamente.");
+                    }
 
-            return `
-🎉 Lista de Confirmações: ${document.title} 🎉
----------------------------------------
-👥 *Total de Confirmados:* ${total}
-📍 *Local:* Rua das Flores, 123 - Centro
-📅 *Data:* 14 de dezembro (sábado)
+                    // 3. Save the results to Firestore
+                    const drawData = {
+                        isDrawn: true,
+                        timestamp: Date.now(),
+                        results: drawResults
+                    };
 
-*Lista de Convidados (em ordem alfabética):*
-${listItems}
-
----------------------------------------
-Confirme sua presença: ${currentUrl}
-`;
-        }
-
-        // Função para abrir o modal de exportação
-        window.showExportModal = function() {
-            const exportText = generateExportText();
-            EXPORT_TEXT_AREA.value = exportText.trim();
-            EXPORT_MODAL.style.display = 'flex';
-            COPY_STATUS.style.display = 'none';
-        }
-
-        // Função para fechar o modal de exportação
-        window.closeExportModal = function() {
-            EXPORT_MODAL.style.display = 'none';
-        }
-
-        // Função para copiar o texto
-        window.copyExportText = function() {
-            EXPORT_TEXT_AREA.select();
-            EXPORT_TEXT_AREA.setSelectionRange(0, 99999); 
-
-            try {
-                navigator.clipboard.writeText(EXPORT_TEXT_AREA.value).then(() => {
-                    COPY_STATUS.textContent = 'Copiado com sucesso! Agora é só colar no WhatsApp.';
-                    COPY_STATUS.style.display = 'block';
-                }).catch(() => {
-                    document.execCommand('copy');
-                    COPY_STATUS.textContent = 'Copiado com sucesso! Agora é só colar no WhatsApp.';
-                    COPY_STATUS.style.display = 'block';
+                    transaction.set(drawDocRef, drawData);
+                    
+                    console.log("Sorteio concluído e salvo.", drawResults);
                 });
-            } catch (err) {
-                document.execCommand('copy');
-                COPY_STATUS.textContent = 'Copiado com sucesso! Agora é só colar no WhatsApp.';
-                COPY_STATUS.style.display = 'block';
+            } catch (e) {
+                // If a transaction fails (e.g., due to already drawn status or error in draw logic)
+                console.error("Erro no sorteio (Transaction failed):", e.message);
+                // Display error to the user via the modal (re-open it)
+                document.getElementById('alertModal').classList.remove('hidden');
+                document.getElementById('alertMessage').textContent = `Ocorreu um erro: ${e.message}`;
+                document.getElementById('alertConfirmButton').textContent = 'Entendi';
+                document.getElementById('alertConfirmButton').onclick = closeAlert;
             }
+        };
 
-            setTimeout(() => {
-                COPY_STATUS.style.display = 'none';
-            }, 3000);
-        }
+        // Make functions available globally for use in HTML
+        window.saveParticipant = saveParticipant;
+        window.confirmAndPerformDraw = confirmAndPerformDraw;
+        window.performDraw = performDraw;
+        window.closeAlert = closeAlert;
 
-
-        // Inicia o processo de conexão
-        initializeFirebase();
 
     </script>
 </body>
 </html>
-
