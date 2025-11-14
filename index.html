@@ -14,16 +14,30 @@
             background-color: #f7f7f7;
             display: flex;
             justify-content: center;
-            padding: 20px;
+            /* Ajuste para mobile: sem padding lateral no body */
+            padding: 0;
+            min-height: 100vh;
         }
         .card {
             background-color: #ffffff;
-            max-width: 550px;
-            width: 100%;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            /* Remove max-width para telas pequenas */
+            width: 100%; 
+            border-radius: 0; /* Remove borda arredondada em mobile para ocupar 100% da tela */
+            box-shadow: none;
         }
+
+        /* Aplica estilos de card em telas maiores */
+        @media (min-width: 640px) {
+            body {
+                padding: 20px;
+            }
+            .card {
+                max-width: 550px;
+                border-radius: 1.5rem;
+                box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+            }
+        }
+
         .header-bg {
             background: linear-gradient(135deg, #4F46E5 0%, #818CF8 100%);
         }
@@ -57,7 +71,7 @@
         #connecting {
             margin-top: 10px;
             font-size: 0.9rem;
-            color: #6366f1;
+            color: #d1d5db; /* Cor mais clara para o header */
             font-weight: 500;
         }
     </style>
@@ -756,54 +770,17 @@
 <body>
     <div class="card">
         <!-- Cabeçalho (Editável no JS) -->
-        <div class="header-bg p-6 rounded-t-xl text-white text-center">
+        <div class="header-bg p-6 rounded-t-xl text-white text-center sm:rounded-b-none pb-2">
+            
+            <!-- Título e Subtítulo -->
             <div class="text-3xl md:text-4xl font-extrabold mb-1" id="eventTitle">
                 <!-- Preenchido pelo JS -->
             </div>
             <p class="text-base font-light" id="eventSubtitle">
                 <!-- Preenchido pelo JS -->
-            </div>
+            </p>
             <p id="userIdDisplay" class="text-xs mt-2 opacity-70">ID: Carregando...</p>
-        </div>
-
-        <div class="p-6 space-y-6">
             
-            <!-- Detalhes da Festa (Editáveis no JS) -->
-            <h2 class="text-xl font-bold text-gray-800 border-b pb-2">Detalhes da Festa</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-gray-700 text-sm">
-                
-                <div class="detail-item text-indigo-600 sm:col-span-2">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span id="detailEndereco"><!-- Endereço --></span>
-                </div>
-                <div class="detail-item text-green-600">
-                    <i class="far fa-calendar-alt"></i>
-                    <span id="detailData"><!-- Data/Hora --></span>
-                </div>
-                <div class="detail-item text-red-600">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <span id="detailValor"><!-- Custo Base p/ Pessoa --></span>   
-                </div>
-                <!-- NOVO: Contribuição Individual (Ícone de Comida/Carne) -->
-                <div class="detail-item text-orange-600 sm:col-span-2">
-                    <i class="fas fa-utensils"></i>
-                    <span id="detailContribuicao" class="italic"><!-- Sua Contribuição --></span>
-                </div>
-                <!-- NOVO: Custo (Ícone de Dinheiro) -->
-                <div class="detail-item text-red-600 sm:col-span-2">
-                    <i class="fas fa-info-circle"></i>
-                    <span id="detailCardapio"><!-- Custo R$ 50,00 --></span>
-                </div>
-                <div class="detail-item text-blue-600">
-                    <i class="fas fa-qrcode"></i>
-                    <span id="detailPix"><!-- PIX --></span>
-                </div>
-                <div class="detail-item text-purple-600">
-                    <i class="fas fa-gift"></i>
-                    <span id="detailAmigo"><!-- Amigo Secreto --></span>
-                </div>
-            </div>
-
             <div class="text-center mt-4">
                  <!-- Conexão Firebase/Autenticação -->
                 <p class="text-sm font-medium" id="connecting">Conectando ao Firebase...</p>
@@ -813,8 +790,48 @@
                 </div>
             </div>
 
+            <!-- DETALHES DA FESTA MOVIDOS PARA O CABEÇALHO COLORIDO -->
+            <h2 class="text-xl font-bold text-white border-b border-white/30 pb-2 mt-6 text-left">Detalhes da Festa</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-white text-sm mt-4 text-left">
+                
+                <div class="detail-item text-white sm:col-span-2">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="detailEndereco" class="font-light"><!-- Endereço --></span>
+                </div>
+                <div class="detail-item text-white">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="detailData" class="font-light"><!-- Data/Hora --></span>
+                </div>
+                <div class="detail-item text-white">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span id="detailValor" class="font-light"><!-- Custo Base p/ Pessoa --></span>   
+                </div>
+                <!-- NOVO: Contribuição Individual (Ícone de Comida/Carne) -->
+                <div class="detail-item text-white sm:col-span-2">
+                    <i class="fas fa-utensils"></i>
+                    <span id="detailContribuicao" class="font-light italic text-sm"><!-- Sua Contribuição --></span>
+                </div>
+                <!-- NOVO: Custo (Ícone de Dinheiro) -->
+                <div class="detail-item text-white sm:col-span-2">
+                    <i class="fas fa-info-circle"></i>
+                    <span id="detailCardapio" class="font-light"><!-- Custo R$ 50,00 --></span>
+                </div>
+                <div class="detail-item text-white">
+                    <i class="fas fa-qrcode"></i>
+                    <span id="detailPix" class="font-light"><!-- PIX --></span>
+                </div>
+                <div class="detail-item text-white">
+                    <i class="fas fa-gift"></i>
+                    <span id="detailAmigo" class="font-light"><!-- Amigo Secreto --></span>
+                </div>
+            </div>
+
+        </div> <!-- Fim do Cabeçalho Colorido -->
+
+        <div class="p-6 space-y-6">
+            
             <!-- Confirme Sua Presença e Custo -->
-            <h3 class="text-lg font-bold text-gray-800 border-b pb-2 mt-6">Confirme Sua Presença e Custo</h3>
+            <h3 class="text-lg font-bold text-gray-800 border-b pb-2 mt-0">Confirme Sua Presença e Custo</h3>
 
             <!-- O generalErrorBox será usado para erros de validação e envio -->
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-4 hidden" role="alert" id="generalErrorBox">
