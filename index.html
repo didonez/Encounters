@@ -60,7 +60,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, collection, query, setDoc, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Leitura Segura das Variáveis Globais (AJUSTADO AQUI) ---
+        // --- Leitura Segura das Variáveis Globais ---
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
@@ -69,15 +69,18 @@
             try {
                 // Tenta fazer o parse apenas se a variável existir e não for nula/vazia
                 firebaseConfig = JSON.parse(__firebase_config);
+                // NOVO: Log para verificar a configuração
+                console.log("Configuração Bruta do Firebase (String):", __firebase_config);
             } catch (e) {
                 console.error("Erro ao fazer parse da configuração do Firebase: A string JSON é inválida.", e);
                 // firebaseConfig permanece como {} se o parse falhar
             }
         }
+        // NOVO: Log para verificar o objeto resultante
+        console.log("Objeto de Configuração do Firebase (Parsed):", firebaseConfig);
         // -----------------------------------------------------------
 
         // --- Variáveis de Configuração da Festa (EDITÁVEIS) ---
-        // ATENÇÃO: Edite apenas os valores destas constantes para mudar os detalhes da festa.
         const FESTA_CONFIG = {
             titulo: "Churrasco com Amigo Secreto 🎁",
             subtitulo: "Confirme sua presença com acompanhantes!",
@@ -134,10 +137,15 @@
         // Função para inicializar o Firebase
         async function initializeFirebase() {
             try {
-                if (Object.keys(firebaseConfig).length === 0) {
-                    showError(authErrorBox, "Erro: Configuração do Firebase não encontrada. Verifique se o __firebase_config está definido corretamente.");
+                // VERIFICAÇÃO MELHORADA
+                if (Object.keys(firebaseConfig).length === 0 || !firebaseConfig.apiKey) {
+                    const message = "Erro: Configuração do Firebase não encontrada. O app não terá armazenamento persistente.";
+                    showError(authErrorBox, message);
+                    console.error(message);
                     connectingDiv.textContent = "Erro de Configuração";
-                    return;
+                    // Continua sem Firebase (apenas UI estática)
+                    loaderDiv.classList.add('hidden'); 
+                    return; 
                 }
 
                 setLogLevel('debug');
@@ -162,7 +170,7 @@
                             }
                         } catch (e) {
                             console.error("Erro na autenticação:", e);
-                            showError(authErrorBox, `Erro de Autenticação: Firebase: ${e.message}`);
+                            showError(authErrorBox, `Erro de Autenticação: ${e.message}`);
                             connectingDiv.textContent = "Falha na Conexão";
                         }
                     }
@@ -177,14 +185,19 @@
 
         function getRsvpsCollectionRef() {
             // Coleção pública para todos os usuários verem as confirmações
-            return collection(db, `artifacts/${appId}/public/data/rsvps`);
+            // Retorna a coleção APENAS se o db estiver inicializado
+            return db ? collection(db, `artifacts/${appId}/public/data/rsvps`) : null;
         }
 
         // Carrega a lista de convidados em tempo real
         function loadGuests() {
-            if (!isAuthReady || !db) return;
+            const rsvpsRef = getRsvpsCollectionRef();
+            if (!isAuthReady || !db || !rsvpsRef) {
+                 // Esta é a condição que impede a execução se o Firebase não inicializou
+                return;
+            }
 
-            const rsvpsQuery = query(getRsvpsCollectionRef());
+            const rsvpsQuery = query(rsvpsRef);
             
             onSnapshot(rsvpsQuery, (querySnapshot) => {
                 const guests = [];
@@ -237,6 +250,10 @@
         window.confirmPresence = async function() {
             hideError(generalErrorBox);
 
+            if (!db) {
+                showError(generalErrorBox, "Erro: Sem conexão com o banco de dados. Configure o Firebase corretamente.");
+                return;
+            }
             if (!isAuthReady || !userId) {
                 showError(generalErrorBox, "Aguarde a conexão com o servidor...");
                 return;
@@ -258,7 +275,6 @@
             confirmButton.innerHTML = `<div class="loader mx-auto"></div>`;
             
             try {
-                // O doc ID é o userId, garantindo que cada usuário só tenha uma confirmação
                 const docRef = doc(getRsvpsCollectionRef(), userId);
                 
                 await setDoc(docRef, {
@@ -366,7 +382,7 @@
 
             <!-- Caixas de Erro -->
             <div id="authErrorBox" class="p-3 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
-                <!-- Erro de Autenticação -->
+                <!-- Erro de Autenticação / Configuração -->
             </div>
             <div id="generalErrorBox" class="p-3 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
                 <!-- Erro Geral -->
