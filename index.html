@@ -32,7 +32,34 @@
         }
         .confirm-btn:hover {
             opacity: 0.9;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 2px, 4px, 0.06);
+        }
+        /* Estilo para o modal de exportação */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -52,24 +79,36 @@
             <!-- Detalhes do Evento -->
             <div class="space-y-4 mb-8 text-gray-700">
                 <h2 class="text-lg font-semibold border-b pb-2 text-gray-800">Detalhes</h2>
+                
                 <div class="flex items-start">
                     <span class="mr-3 text-red-500 text-xl" role="img" aria-label="calendar">🗓️</span>
                     <div>
                         <span class="font-bold">Data:</span> 14 de dezembro (sábado)
                     </div>
                 </div>
+                
                 <div class="flex items-start">
                     <span class="mr-3 text-blue-500 text-xl" role="img" aria-label="clock">🕒</span>
                     <div>
                         <span class="font-bold">Horário:</span> das 09h às 22h
                     </div>
                 </div>
+                
+                <!-- NOVA LINHA: ENDEREÇO -->
+                <div class="flex items-start">
+                    <span class="mr-3 text-red-700 text-xl" role="img" aria-label="pin">📍</span>
+                    <div>
+                        <span class="font-bold">Local:</span> Rua das Flores, 123 - Centro (Casa da Tia Wanda)
+                    </div>
+                </div>
+                
                 <div class="flex items-start">
                     <span class="mr-3 text-yellow-600 text-xl" role="img" aria-label="event">💬</span>
                     <div>
                         <span class="font-bold">Evento:</span> Churrasco com "Amigo Chocolate" <span role="img" aria-label="diamond">💎</span>
                     </div>
                 </div>
+                
                 <div class="bg-blue-100 text-sm p-3 rounded-lg text-blue-800 mt-4 border-l-4 border-blue-500">
                     <span role="img" aria-label="info">ℹ️</span> O sorteio do Amigo Chocolate será feito após a confirmação de todos os participantes. Não esqueçam de confirmar presença!
                 </div>
@@ -103,9 +142,18 @@
                 </form>
             </section>
 
-            <!-- Lista de Convidados Confirmados -->
+            <!-- Lista de Convidados Confirmados e Botão de Exportação -->
             <section>
-                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-t pt-4">Lista de Convidados (<span id="confirmed-count">0</span> Confirmados)</h2>
+                <div class="flex justify-between items-center mb-4 border-t pt-4">
+                    <h2 class="text-xl font-semibold text-gray-800">
+                        Lista de Convidados (<span id="confirmed-count">0</span> Confirmados)
+                    </h2>
+                    <button id="export-button" onclick="showExportModal()" 
+                            class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-2 px-3 rounded-lg disabled:opacity-50 confirm-btn" disabled>
+                        <span role="img" aria-label="share">🔗</span> Exportar Lista
+                    </button>
+                </div>
+                
                 <div id="guests-list" class="space-y-2">
                     <!-- A lista será populada pelo JavaScript -->
                     <p id="loading-guests" class="text-center text-gray-500">
@@ -120,6 +168,31 @@
 
         </main>
     </div>
+    
+    <!-- Modal de Exportação -->
+    <div id="export-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Lista para Compartilhar</h3>
+            
+            <p class="text-sm text-gray-600 mb-3">
+                Copie o texto abaixo e cole no WhatsApp para enviar a lista de confirmados.
+            </p>
+            
+            <textarea id="export-text-area" rows="10" readonly 
+                      class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-sm resize-none"></textarea>
+            
+            <div class="mt-4 flex justify-end space-x-3">
+                <button onclick="closeExportModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg confirm-btn">
+                    Fechar
+                </button>
+                <button onclick="copyExportText()" id="copy-button" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg confirm-btn">
+                    Copiar
+                </button>
+            </div>
+            <p id="copy-status" class="text-sm text-center mt-2 text-green-600 font-medium" style="display: none;">Copiado com sucesso!</p>
+        </div>
+    </div>
+
 
     <!-- FIREBASE AND APP LOGIC -->
     <script type="module">
@@ -128,7 +201,7 @@
         import { getFirestore, doc, setDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // =========================================================================
-        // CONFIGURAÇÃO DO FIREBASE
+        // CONFIGURAÇÃO DO FIREBASE (AS CHAVES FORAM INSERIDAS AQUI)
         // =========================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyDrml6PR8c2BABa8X5HbYBmAUsTua_hPbk",
@@ -145,13 +218,24 @@
         let auth;
         let userId = null;
         let isAuthReady = false;
+        let currentGuests = []; // Armazena a lista de convidados para a função de exportação
 
+        // ELEMENTOS DA UI
         const STATUS_MESSAGE = document.getElementById('status-message');
         const CONFIRM_BUTTON = document.getElementById('confirm-button');
+        const EXPORT_BUTTON = document.getElementById('export-button');
         const GUEST_COUNT = document.getElementById('confirmed-count');
         const GUESTS_LIST = document.getElementById('guests-list');
         const FULL_NAME_INPUT = document.getElementById('full-name');
         const LOADING_GUESTS = document.getElementById('loading-guests');
+        const EXPORT_MODAL = document.getElementById('export-modal');
+        const EXPORT_TEXT_AREA = document.getElementById('export-text-area');
+        const COPY_STATUS = document.getElementById('copy-status');
+
+        // VARIÁVEL CHAVE PARA REUSO DO FORMULÁRIO:
+        // Se você for usar este formulário para um evento diferente, mude este nome
+        // Ex: 'rsvps-cha-de-bebe' ou 'confirmacoes-casamento'
+        const RSVPS_COLLECTION_NAME = 'rsvps-wanda-2025'; 
 
         // Função para mostrar mensagens de status
         function showStatus(message, type = 'error') {
@@ -174,7 +258,7 @@
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
-                auth = getAuth(app);
+                auth = getAuth(app); 
 
                 // Autenticação Anônima - Usamos para obter um userId único para cada visitante
                 onAuthStateChanged(auth, async (user) => {
@@ -182,14 +266,15 @@
                         userId = user.uid;
                         isAuthReady = true;
                         CONFIRM_BUTTON.disabled = false;
+                        EXPORT_BUTTON.disabled = false;
                         showStatus("Conectado ao banco de dados com sucesso. Você pode confirmar sua presença.", 'success');
                         setupGuestsListener(); // Inicia o listener do Firestore após a autenticação
                     } else {
-                        // Se não estiver autenticado, autentica anonimamente
+                        // Se não estiver autenticado, tenta autenticar anonimamente
                         try {
                             await signInAnonymously(auth);
                         } catch (e) {
-                            showStatus(`Erro de Autenticação: ${e.message}`, 'error');
+                            showStatus(`Erro de Autenticação: ${e.message}. Por favor, verifique a aba "Método de login" no Console do Firebase e ative o login Anônimo.`, 'error');
                             console.error("Erro na autenticação:", e);
                         }
                     }
@@ -207,10 +292,9 @@
                 return;
             }
 
-            // O caminho da coleção: /artifacts/{projectId}/public/data/rsvps
-            // Isso garante que os dados fiquem públicos (visíveis para todos)
+            // O caminho da coleção agora usa a variável customizada: /artifacts/{projectId}/public/data/{RSVPS_COLLECTION_NAME}
             const projectId = firebaseConfig.projectId;
-            const rsvpsRef = collection(db, 'artifacts', projectId, 'public', 'data', 'rsvps');
+            const rsvpsRef = collection(db, 'artifacts', projectId, 'public', 'data', RSVPS_COLLECTION_NAME);
             
             // O onSnapshot monitora as mudanças na coleção em tempo real
             onSnapshot(rsvpsRef, (snapshot) => {
@@ -226,10 +310,13 @@
                     }
                 });
 
-                // Ordena por ordem de confirmação (mais recente primeiro)
-                guests.sort((a, b) => b.timestamp - a.timestamp); 
+                // Armazena a lista na variável global para uso na exportação
+                currentGuests = guests; 
                 
-                renderGuestsList(guests);
+                // Ordena por ordem de confirmação (mais recente primeiro)
+                currentGuests.sort((a, b) => b.timestamp - a.timestamp); 
+                
+                renderGuestsList(currentGuests);
             }, (error) => {
                 showStatus(`Erro ao carregar lista de convidados: ${error.message}`, 'error');
                 console.error("Erro no onSnapshot:", error);
@@ -301,9 +388,8 @@
 
             try {
                 // Usa o ID do usuário autenticado anonimamente como ID do documento.
-                // Isso garante que o mesmo usuário/navegador só consiga confirmar uma vez.
                 const projectId = firebaseConfig.projectId;
-                const docRef = doc(db, 'artifacts', projectId, 'public', 'data', 'rsvps', userId);
+                const docRef = doc(db, 'artifacts', projectId, 'public', 'data', RSVPS_COLLECTION_NAME, userId);
                 
                 await setDoc(docRef, {
                     name: name,
@@ -312,7 +398,8 @@
                 });
 
                 showStatus(`Obrigado, ${name}! Sua presença foi confirmada!`, 'success');
-                FULL_NAME_INPUT.value = ''; // Limpa o campo após o sucesso
+                // Não limpa o campo, assim o usuário vê que seu nome continua lá
+                // FULL_NAME_INPUT.value = ''; 
 
             } catch (e) {
                 showStatus(`Erro ao salvar a confirmação: ${e.message}`, 'error');
@@ -324,6 +411,77 @@
                 document.getElementById('loading-spinner').style.display = 'none';
             }
         }
+        
+        // ===============================================
+        // FUNÇÕES DO MODAL DE EXPORTAÇÃO
+        // ===============================================
+
+        // Função para gerar o texto formatado para compartilhamento
+        function generateExportText() {
+            const confirmedNames = currentGuests.map(guest => guest.name);
+            const listItems = confirmedNames.map((name, index) => `${index + 1}. ${name}`).join('\n');
+            const total = currentGuests.length;
+            
+            // Tenta obter a URL atual da página
+            const currentUrl = window.location.href; 
+
+            return `
+🎉 Lista de Confirmações: ${document.title} 🎉
+---------------------------------------
+👥 *Total de Confirmados:* ${total}
+📍 *Local:* Rua das Flores, 123 - Centro
+📅 *Data:* 14 de dezembro (sábado)
+
+*Lista de Convidados:*
+${listItems}
+
+---------------------------------------
+Confirme sua presença: ${currentUrl}
+`;
+        }
+
+        // Função para abrir o modal
+        window.showExportModal = function() {
+            const exportText = generateExportText();
+            EXPORT_TEXT_AREA.value = exportText.trim();
+            EXPORT_MODAL.style.display = 'flex';
+            COPY_STATUS.style.display = 'none';
+        }
+
+        // Função para fechar o modal
+        window.closeExportModal = function() {
+            EXPORT_MODAL.style.display = 'none';
+        }
+
+        // Função para copiar o texto (compatível com iFrame)
+        window.copyExportText = function() {
+            EXPORT_TEXT_AREA.select();
+            EXPORT_TEXT_AREA.setSelectionRange(0, 99999); // Para mobile
+
+            try {
+                // Tenta usar a API moderna (não funciona em iFrames de terceiros)
+                navigator.clipboard.writeText(EXPORT_TEXT_AREA.value).then(() => {
+                    COPY_STATUS.textContent = 'Copiado com sucesso! Agora é só colar no WhatsApp.';
+                    COPY_STATUS.style.display = 'block';
+                }).catch(() => {
+                    // Fallback para o método antigo (que geralmente funciona em iFrames)
+                    document.execCommand('copy');
+                    COPY_STATUS.textContent = 'Copiado com sucesso! Agora é só colar no WhatsApp.';
+                    COPY_STATUS.style.display = 'block';
+                });
+            } catch (err) {
+                // Fallback final
+                document.execCommand('copy');
+                COPY_STATUS.textContent = 'Copiado com sucesso! Agora é só colar no WhatsApp.';
+                COPY_STATUS.style.display = 'block';
+            }
+
+            // Esconde a mensagem de status após 3 segundos
+            setTimeout(() => {
+                COPY_STATUS.style.display = 'none';
+            }, 3000);
+        }
+
 
         // Inicia o processo de conexão
         initializeFirebase();
