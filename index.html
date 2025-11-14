@@ -80,6 +80,16 @@
         <!-- Conteúdo Principal -->
         <main class="p-6">
             
+            <!-- NOVO: Seção de ADMIN_ID para facilitar a cópia -->
+            <div id="admin-info-section" style="display:none;" class="mb-6 p-3 bg-red-100 rounded-lg border-l-4 border-red-500">
+                <p class="font-bold text-red-800 mb-1">Passo 1: Copie seu Admin ID</p>
+                <input type="text" id="admin-user-id-display" readonly 
+                       class="w-full p-2 border border-red-300 rounded-lg text-xs bg-white cursor-text"
+                       placeholder="Seu ID aparecerá aqui após a conexão">
+                <p class="text-xs text-red-700 mt-1">Copie o ID acima, substitua a variável `ADMIN_ID` no código e recarregue a página.</p>
+            </div>
+            <!-- Fim da Seção de ADMIN_ID -->
+            
             <!-- Detalhes do Evento -->
             <div class="space-y-4 mb-8 text-gray-700">
                 <h2 class="text-lg font-semibold border-b pb-2 text-gray-800">Detalhes</h2>
@@ -141,7 +151,7 @@
                 </form>
             </section>
             
-            <!-- NOVO: SEÇÃO DE AMIGO SECRETO -->
+            <!-- SEÇÃO DE AMIGO SECRETO -->
             <section class="mb-8 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                 <h2 class="text-xl font-semibold mb-3 text-gray-800 flex items-center">
                     <span role="img" aria-label="gift" class="mr-2 text-2xl">🎁</span> Amigo Chocolate
@@ -199,7 +209,7 @@
         </div>
     </div>
     
-    <!-- NOVO MODAL: Meu Amigo Secreto -->
+    <!-- MODAL: Meu Amigo Secreto -->
     <div id="secret-santa-modal" class="modal" style="display: none;">
         <div class="modal-content text-center">
             <h3 class="text-2xl font-extrabold mb-4 text-pink-600 secret-santa-text">Seu Amigo Chocolate é:</h3>
@@ -240,16 +250,15 @@
         const SECRET_SANTA_COLLECTION_NAME = 'secret-santa-wanda-2025';
         
         // ID DO ADMINISTRADOR (APENAS O ADMIN PODE GERAR O SORTEIO)
-        // Você deve obter o seu userId e colar aqui.
-        // DICA: Confirme sua presença e olhe o console para ver o seu userId.
-        const ADMIN_ID = 'yW000000000000000000000000000000000000000000000000000000000000000'; // SUBSTITUA PELO SEU USER ID REAL
+        // PASSO 2: Cole o seu ID copiado aqui, substituindo o valor de exemplo.
+        const ADMIN_ID = 'yW000000000000000000000000000000000000000000000000000000000000000'; // SUBSTITUA PELO SEU USER ID REAL!
 
         let db;
         let auth;
         let userId = null;
         let isAuthReady = false;
         let currentGuests = []; 
-        let isSantaDrawn = false; // Flag para saber se o sorteio foi realizado
+        let isSantaDrawn = false; 
 
         // ELEMENTOS DA UI
         const STATUS_MESSAGE = document.getElementById('status-message');
@@ -265,6 +274,8 @@
         const SECRET_SANTA_SECTION = document.getElementById('secret-santa-section');
         const SECRET_SANTA_MODAL = document.getElementById('secret-santa-modal');
         const SANTA_RESULT = document.getElementById('santa-result');
+        const ADMIN_INFO_SECTION = document.getElementById('admin-info-section');
+        const ADMIN_USER_ID_DISPLAY = document.getElementById('admin-user-id-display');
 
 
         // Função para mostrar mensagens de status
@@ -297,13 +308,27 @@
                         CONFIRM_BUTTON.disabled = false;
                         EXPORT_BUTTON.disabled = false;
                         
-                        // **DICA PARA O ADMIN:** Imprime o userId no console
-                        console.log("Seu User ID (Para ser Admin):", userId); 
-
+                        // NOVO: Exibe o ID na UI se o ID temporário for usado
+                        if (ADMIN_ID === 'yW000000000000000000000000000000000000000000000000000000000000000') {
+                            ADMIN_INFO_SECTION.style.display = 'block';
+                            ADMIN_USER_ID_DISPLAY.value = userId;
+                        } else if (userId === ADMIN_ID) {
+                             // Se o ID já foi configurado corretamente, mas você está logado, 
+                             // ele exibe a seção para mostrar que a configuração está correta.
+                            ADMIN_INFO_SECTION.style.display = 'block';
+                            ADMIN_USER_ID_DISPLAY.value = userId + " (ADMIN OK)";
+                            ADMIN_USER_ID_DISPLAY.classList.remove('bg-red-100');
+                            ADMIN_USER_ID_DISPLAY.classList.add('bg-green-100', 'text-green-800');
+                            document.querySelector('#admin-info-section p.font-bold').textContent = 'Configuração de Admin OK.';
+                            document.querySelector('#admin-info-section p.text-xs').textContent = 'Você tem acesso ao sorteio.';
+                        } else {
+                            ADMIN_INFO_SECTION.style.display = 'none';
+                        }
+                        
                         showStatus("Conectado ao banco de dados com sucesso. Você pode confirmar sua presença.", 'success');
                         
                         setupGuestsListener(); 
-                        setupSantaListener(); // NOVO: Inicia o listener do Amigo Secreto
+                        setupSantaListener();
                     } else {
                         try {
                             await signInAnonymously(auth);
@@ -343,29 +368,25 @@
                 currentGuests.sort((a, b) => b.timestamp - a.timestamp); 
                 
                 renderGuestsList(currentGuests);
-                updateSantaSection(); // Atualiza a seção do Amigo Secreto
+                updateSantaSection(); 
             }, (error) => {
                 showStatus(`Erro ao carregar lista de convidados: ${error.message}`, 'error');
                 console.error("Erro no onSnapshot (RSVP):", error);
             });
         }
         
-        // NOVO: Função para monitorar o status do sorteio
+        // Função para monitorar o status do sorteio
         function setupSantaListener() {
             if (!db || !userId) return;
 
             const projectId = firebaseConfig.projectId;
-            // O resultado do sorteio é um único documento na coleção 'secret-santa'
             const santaDocRef = doc(db, 'artifacts', projectId, 'public', 'data', SECRET_SANTA_COLLECTION_NAME, 'result');
             
             onSnapshot(santaDocRef, (docSnapshot) => {
                 if (docSnapshot.exists()) {
-                    // O sorteio foi realizado
                     isSantaDrawn = true;
-                    // O conteúdo do documento é o mapa de userId para quem ele tirou.
                     window.santaMap = docSnapshot.data().map; 
                 } else {
-                    // O sorteio ainda não foi realizado
                     isSantaDrawn = false;
                     window.santaMap = {};
                 }
@@ -376,7 +397,7 @@
             });
         }
         
-        // NOVO: Função para atualizar a seção do Amigo Secreto
+        // Função para atualizar a seção do Amigo Secreto
         function updateSantaSection() {
             if (!isAuthReady || !userId) {
                 SECRET_SANTA_SECTION.innerHTML = '<p class="text-center text-gray-500">Aguardando autenticação...</p>';
@@ -392,9 +413,9 @@
                 if (isSantaDrawn) {
                     SECRET_SANTA_SECTION.innerHTML = `
                         <p class="text-lg font-medium text-green-700 mb-2">
-                            <span role="img" aria-label="done">✔️</span> Sorteio Realizado!
+                            <span role="img" aria-label="done">✔️</span> Sorteio Realizado para ${totalGuests} pessoas!
                         </p>
-                        <p class="text-sm text-gray-600 mb-3">Total de ${totalGuests} participantes.</p>
+                        <p class="text-sm text-gray-600 mb-3">Clique abaixo para conferir o seu amigo.</p>
                         <button onclick="viewSantaResult()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg confirm-btn">
                             <span role="img" aria-label="view">👁️</span> Ver Meu Amigo Secreto
                         </button>
@@ -404,7 +425,7 @@
                     if (totalGuests === 0 || totalGuests % 2 !== 0) {
                         SECRET_SANTA_SECTION.innerHTML = `
                             <p class="text-lg font-medium text-red-700 mb-2">
-                                <span role="img" aria-label="error">⚠️</span> O número de participantes (${totalGuests}) não é par.
+                                <span role="img" aria-label="error">⚠️</span> O número de participantes (${totalGuests}) é **ímpar**.
                             </p>
                             <p class="text-sm text-gray-600">Aguarde mais ${totalGuests === 0 ? 2 : 1} pessoa(s) ou ajuste a lista para um número par para sortear.</p>
                         `;
@@ -422,7 +443,15 @@
                 }
             } else {
                 // VISÃO DO PARTICIPANTE COMUM
-                if (isSantaDrawn) {
+                const hasConfirmed = currentGuests.some(g => g.id === userId);
+                
+                if (!hasConfirmed) {
+                     SECRET_SANTA_SECTION.innerHTML = `
+                        <p class="text-lg font-medium text-gray-700">
+                           <span role="img" aria-label="confirm">✍️</span> Confirme sua presença para participar do sorteio!
+                        </p>
+                    `;
+                } else if (isSantaDrawn) {
                      SECRET_SANTA_SECTION.innerHTML = `
                         <p class="text-lg font-medium text-green-700 mb-2">
                             <span role="img" aria-label="done">✔️</span> O sorteio foi realizado!
@@ -506,7 +535,6 @@
 
             try {
                 const projectId = firebaseConfig.projectId;
-                // Armazena o nome e o userId para usar no sorteio
                 const docRef = doc(db, 'artifacts', projectId, 'public', 'data', RSVPS_COLLECTION_NAME, userId);
                 
                 await setDoc(docRef, {
@@ -528,7 +556,7 @@
         }
         
         // ===============================================
-        // LÓGICA DO AMIGO SECRETO (NOVO)
+        // LÓGICA DO AMIGO SECRETO 
         // ===============================================
 
         // Função principal para gerar o sorteio
@@ -554,7 +582,6 @@
                 const projectId = firebaseConfig.projectId;
                 const santaDocRef = doc(db, 'artifacts', projectId, 'public', 'data', SECRET_SANTA_COLLECTION_NAME, 'result');
                 
-                // Armazena o mapa no Firestore
                 await setDoc(santaDocRef, {
                     map: map,
                     drawnBy: userId,
@@ -575,7 +602,7 @@
         // Algoritmo de sorteio que garante que ninguém tire a si mesmo
         function generateSecretSantaMap(participants) {
             const giverIds = participants.map(p => p.id);
-            const receiverIds = [...giverIds]; // Copia a lista de recebedores
+            const receiverIds = [...giverIds]; 
             const namesMap = participants.reduce((acc, p) => ({ ...acc, [p.id]: p.name }), {});
             const santaMap = {};
 
@@ -591,7 +618,6 @@
                     const giverId = giverIds[i];
                     const receiverId = shuffledReceivers[i];
                     
-                    // Condição de falha: Se a pessoa tirar a si mesma, o sorteio é inválido
                     if (giverId === receiverId) {
                         isValid = false;
                         break;
@@ -603,7 +629,6 @@
                 }
 
                 if (isValid) {
-                    // Sorteio válido encontrado
                     giverIds.forEach(id => {
                         santaMap[id] = currentDraw[id].receiverName;
                     });
@@ -612,7 +637,6 @@
                 attempts++;
             }
             
-            // Se falhar após MAX_ATTEMPTS, é improvável, mas pode acontecer
             throw new Error("Não foi possível gerar um sorteio válido após 100 tentativas. Tente novamente.");
         }
 
@@ -659,7 +683,6 @@
         // Função para gerar o texto formatado para compartilhamento
         function generateExportText() {
             const confirmedNames = currentGuests.map(guest => guest.name);
-            // Ordena por nome para facilitar a visualização da lista
             confirmedNames.sort((a, b) => a.localeCompare(b)); 
             const listItems = confirmedNames.map((name, index) => `${index + 1}. ${name}`).join('\n');
             const total = currentGuests.length;
