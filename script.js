@@ -31,9 +31,9 @@ const valorDisplay = document.getElementById('valor-display');
 const mensagemStatus = document.getElementById('mensagem-status');
 const nomesAcompanhantesWrapper = document.getElementById('nomes-acompanhantes-wrapper');
 
-// ⭐️ NOVO ID DA FESTA DE NATAL ⭐️
-const ID_FESTA = 'CONFRATERNIZACAO_NATAL_2025'; 
-// Caminho correto da coleção: festas/CONFRATERNIZACAO_NATAL_2025/participantes
+// ⭐️ NOVO ID DA FESTA DE NATAL (SEM ANO) ⭐️
+const ID_FESTA = 'CONFRATERNIZACAO_NATAL'; 
+// O Firebase criará: festas/CONFRATERNIZACAO_NATAL/participantes
 const colecaoParticipantes = db.collection('festas').doc(ID_FESTA).collection('participantes');
 
 // --- FUNÇÕES DE LÓGICA DE NEGÓCIO ---
