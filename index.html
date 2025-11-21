@@ -92,8 +92,7 @@
         let firebaseConfig = {};
         let isConfigValid = false;
         
-        // --- CONFIGURAÇÃO DE FALLBACK HARDCODED (ATUALIZADO COM OS DADOS DO SEU PRINT) ---
-        // A chave API é a mesma que estava no print (image_b08e89.png) para garantir a conexão
+        // --- CONFIGURAÇÃO DE FALLBACK HARDCODED (ATUALIZADO COM OS DADOS DO SEU PRINT image_b08e89.png) ---
         const HARDCODED_FALLBACK_CONFIG = {
              apiKey: "AIzaSyDrml6PR8c2BABa8X5HbYBmAUsTua_hPbk", 
              authDomain: "formularios-7a70f.firebaseapp.com",
@@ -105,6 +104,7 @@
         };
         // ------------------------------------------------------------------------
 
+        // Lógica para determinar a configuração
         try {
             // Tenta obter a configuração do ambiente
             if (typeof __firebase_config !== 'undefined' && __firebase_config) {
@@ -118,13 +118,32 @@
             console.error("Erro ao processar __firebase_config:", e);
         }
 
-        // Se a configuração do ambiente falhou, usa o fallback hardcoded ATUALIZADO
+        // Se a configuração do ambiente falhou, usa o fallback hardcoded
         if (!isConfigValid && HARDCODED_FALLBACK_CONFIG.apiKey) {
              firebaseConfig = HARDCODED_FALLBACK_CONFIG;
              isConfigValid = true;
-             console.warn("Usando Configuração de Fallback Hardcoded do Firebase. Conexão deve funcionar.");
+             console.warn("Usando Configuração de Fallback Hardcoded do Firebase.");
         }
-
+        
+        // Se após tudo, a configuração ainda for inválida, exibe o erro imediatamente
+        if (!isConfigValid) {
+            document.addEventListener('DOMContentLoaded', () => {
+                const connectingDiv = document.getElementById('connecting');
+                const authErrorBox = document.getElementById('authErrorBox');
+                const confirmButton = document.getElementById('confirmButton');
+                const generalErrorBox = document.getElementById('generalErrorBox'); 
+                
+                connectingDiv.textContent = "Falha de Conexão (Sem Persistência)";
+                generalErrorBox.classList.add('hidden'); // Oculta o erro de validação do form
+                authErrorBox.classList.remove('hidden');
+                authErrorBox.innerHTML = '🚨 Erro: Configuração do Firebase ausente. O app não terá armazenamento persistente. Por favor, verifique a configuração.';
+                
+                confirmButton.disabled = true;
+                confirmButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                confirmButton.classList.add('bg-gray-400');
+                confirmButton.innerHTML = 'Falha de Conexão';
+            });
+        }
 
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null; 
         
@@ -154,7 +173,7 @@
         const generalErrorBox = document.getElementById('generalErrorBox'); 
         const loaderDiv = document.getElementById('loader');
         const connectingDiv = document.getElementById('connecting');
-        const userIdDisplay = document.getElementById('userIdDisplay');
+        // REMOVIDO: const userIdDisplay = document.getElementById('userIdDisplay');
         const numAmigoSecretoAcompanhantesInput = document.getElementById('numAmigoSecretoAcompanhantes');
         const amigoSecretoAcompanhantesDiv = document.getElementById('amigoSecretoAcompanhantesDiv');
         const drawButton = document.getElementById('drawButton');
@@ -182,7 +201,7 @@
         }
 
         function showError(element, message) {
-            element.textContent = message;
+            element.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i> ${message}`;
             element.classList.remove('hidden');
         }
 
@@ -195,9 +214,9 @@
              confirmButton.disabled = isConfirmed || isErrorState;
              confirmButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'bg-red-600', 'hover:bg-red-700', 'bg-green-600', 'hover:bg-green-700', 'bg-gray-400');
              
-             if (isErrorState) {
+             if (!isConfigValid || isErrorState) {
                 confirmButton.classList.add('bg-gray-400');
-                confirmButton.innerHTML = `Falha de Conexão`;
+                confirmButton.innerHTML = `<i class="fas fa-times-circle mr-2"></i> Falha de Conexão`;
              } else if (isConfirmed) {
                  confirmButton.classList.add('bg-green-600', 'hover:bg-green-700');
                  confirmButton.innerHTML = `<i class="fas fa-check-circle mr-2"></i> Presença Confirmada!`;
@@ -210,18 +229,14 @@
 
         // Função para inicializar o Firebase
         async function initializeFirebase() {
+             // Se a configuração for inválida, apenas exibe a mensagem de erro no header e desabilita
+             // Este check é redundante mas garante o estado correto se a chamada for externa
+             if (!isConfigValid) {
+                 resetConfirmButton(false, true); 
+                 return; 
+             }
+            
             try {
-                // CORREÇÃO CRÍTICA: Verifica se a configuração essencial está presente
-                if (!isConfigValid) {
-                    const message = "🚨 Erro: Configuração do Firebase ausente. O app não terá armazenamento persistente. Por favor, verifique a configuração.";
-                    showError(authErrorBox, message);
-                    console.error(message);
-                    connectingDiv.textContent = "Falha de Conexão (Sem Persistência)";
-                    loaderDiv.classList.add('hidden');
-                    resetConfirmButton(false, true); // Desabilita o botão em estado de erro
-                    return; 
-                }
-
                 setLogLevel('debug');
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
@@ -232,11 +247,10 @@
                         userId = user.uid;
                         isAuthReady = true;
                         hideError(authErrorBox);
-                        userIdDisplay.textContent = `ID: ${userId}`;
+                        // REMOVIDO: userIdDisplay.textContent = `ID: ${userId}`;
                         connectingDiv.classList.add('hidden');
                         
-                        // CORREÇÃO AQUI: Garante que o RSVP e os campos do formulário são carregados
-                        // ANTES de carregar a lista de convidados para evitar race condition.
+                        // Garante que o RSVP e os campos do formulário são carregados
                         await checkMyRsvp(); 
                         
                         loadGuests(); // Inicia o listener de convidados
@@ -253,7 +267,7 @@
                             console.error("Erro na autenticação:", e);
                             showError(authErrorBox, `Erro de Autenticação: ${e.message}`);
                             connectingDiv.textContent = "Falha na Conexão";
-                            resetConfirmButton(false, true); // Desabilita o botão em estado de erro
+                            resetConfirmButton(false, true); 
                         }
                     }
                 });
@@ -262,7 +276,7 @@
                 console.error("Erro fatal ao inicializar o Firebase:", e);
                 showError(authErrorBox, `Erro fatal na aplicação: ${e.message}`);
                 connectingDiv.textContent = "Falha Crítica";
-                resetConfirmButton(false, true); // Desabilita o botão em estado de erro
+                resetConfirmButton(false, true); 
             }
         }
 
@@ -281,8 +295,9 @@
         
         // Função para checar e preencher o formulário se o RSVP já foi feito
         window.checkMyRsvp = async function() {
-             // CORREÇÃO: Não tenta executar se o Firebase não estiver pronto
+             // Não tenta executar se o Firebase não estiver pronto
              if (!isAuthReady || !db || !userId) {
+                 resetConfirmButton(false, !isConfigValid); // Garante o estado correto
                  return;
              }
              
@@ -306,9 +321,8 @@
                     const numAS = data.numAmigoSecretoAcompanhantes || 0;
                     numAmigoSecretoAcompanhantesInput.value = numAS;
                     
-                    // 3. Re-calcular e renderizar campos dinâmicos (MUITA ATENÇÃO AQUI)
+                    // 3. Re-calcular e renderizar campos dinâmicos
                     calculateTotal();
-                    // O data.amigoSecretoCompanionNames contém os nomes que devem ser usados para preencher os campos.
                     toggleAmigoSecretoAcompanhantes(data.amigoSecretoCompanionNames || []);
                     
                     // 4. Mostrar botão como confirmado
@@ -320,8 +334,8 @@
                 }
              } catch (e) {
                  console.error("Erro ao verificar RSVP:", e);
-                 // Se falhar aqui, não desabilita o botão, apenas garante que não está travado no loader
-                 resetConfirmButton(false);
+                 // Se falhar aqui (e a configuração for válida), mostra o estado inicial
+                 resetConfirmButton(false, !isConfigValid); 
              }
         }
 
@@ -329,7 +343,7 @@
         // Carrega a lista de convidados em tempo real
         function loadGuests() {
             const rsvpsRef = getRsvpsCollectionRef();
-            // CORREÇÃO: Retorna se o Firebase não está pronto
+            // Retorna se o Firebase não está pronto
             if (!isAuthReady || !db || !rsvpsRef) {
                 loaderDiv.classList.add('hidden');
                 guestListDiv.innerHTML = '<p class="text-center text-red-500 italic p-4">Não foi possível carregar a lista: Falha de conexão com o Firebase.</p>';
@@ -393,10 +407,10 @@
         window.confirmPresence = async function() {
             hideError(generalErrorBox);
 
-            // CORREÇÃO: Não tenta executar se o Firebase não estiver pronto
-            if (!db || !isAuthReady || !userId) {
-                showError(generalErrorBox, "Erro: Conexão com o Firebase não estabelecida. Por favor, verifique a configuração e recarregue a página.");
-                resetConfirmButton(false, true); // Garante que o botão está em estado de erro
+            // Se o Firebase não está pronto, impede o envio e mostra erro imediato
+            if (!db || !isAuthReady || !userId || !isConfigValid) {
+                showError(generalErrorBox, "Erro: Conexão com o Firebase não estabelecida. O envio falhou imediatamente.");
+                resetConfirmButton(false, true); 
                 return;
             }
 
@@ -471,12 +485,12 @@
                     userId: userId,
                 });
 
-                // CORREÇÃO: Muda o botão para o estado de sucesso imediatamente após salvar
+                // Muda o botão para o estado de sucesso imediatamente após salvar
                 resetConfirmButton(true);
                 
             } catch (e) {
                 console.error("Erro ao confirmar presença:", e);
-                showError(generalErrorBox, `Erro ao confirmar presença: ${e.message}. Se o erro persistir, a configuração do Firebase pode estar incorreta.`);
+                showError(generalErrorBox, `Erro ao confirmar presença: ${e.message}. Tente novamente.`);
                 
                 // Erro: Botão vermelho
                 confirmButton.disabled = false;
@@ -519,7 +533,7 @@
                     const nameField = document.createElement('div');
                     nameField.classList.add('mt-2');
                     
-                    // Pré-preencher o nome se estiver disponível nos dados salvos (CORREÇÃO DE BUG: usa o array companionNames)
+                    // Pré-preencher o nome se estiver disponível nos dados salvos
                     const nameValue = companionNames[i] || ''; 
                     
                     nameField.innerHTML = `
@@ -535,7 +549,7 @@
         // Função para verificar e exibir o status do sorteio e visibilidade dos botões
         window.checkAmigoSecretoStatus = async function() {
             // Retorna se o Firebase não está pronto
-            if (!isAuthReady || !db) return;
+            if (!isAuthReady || !db || !isConfigValid) return;
 
             // 1. Visibilidade do Botão de Sorteio (Apenas Organizador)
             if (userId === FESTA_CONFIG.ORGANIZER_ID) {
@@ -581,7 +595,7 @@
                 showError(generalErrorBox, "Apenas o organizador pode realizar o sorteio.");
                 return;
             }
-            if (!db || !isAuthReady) {
+            if (!db || !isAuthReady || !isConfigValid) {
                  showError(generalErrorBox, "Aguarde a conexão com o Firebase.");
                  return;
             }
@@ -686,7 +700,7 @@
         // Função para exibir o resultado do sorteio para o usuário atual
         window.checkMyDraw = async function(isAutomatic = false) {
              // Retorna se o Firebase não está pronto
-            if (!isAuthReady || !db) return;
+            if (!isAuthReady || !db || !isConfigValid) return;
 
             if (!isAutomatic) {
                 checkDrawButton.disabled = true;
@@ -769,8 +783,13 @@
             toggleAmigoSecretoAcompanhantes(); 
             resetConfirmButton(false, !isConfigValid); // Estado inicial: normal ou de erro se não houver config
 
-            // 4. Iniciar Firebase
-            initializeFirebase();
+            // 4. Iniciar Firebase, mas só se tiver config válida
+            if (isConfigValid) {
+                initializeFirebase();
+            } else {
+                 loaderDiv.classList.add('hidden'); // Esconde o loader de convidados se não tiver config
+                 guestListDiv.innerHTML = '<p class="text-center text-red-500 italic p-4">A lista não pode ser carregada devido à Falha de Conexão.</p>';
+            }
         }
 
         window.onload = setupUI;
@@ -790,12 +809,12 @@
             <p class="text-base font-light" id="eventSubtitle">
                 <!-- Preenchido pelo JS -->
             </p>
-            <p id="userIdDisplay" class="text-xs mt-2 opacity-70">ID: Carregando...</p>
+            <!-- O elemento userIdDisplay foi removido daqui para ocultar o ID. -->
             
             <div class="text-center mt-4">
                  <!-- Conexão Firebase/Autenticação -->
                 <p class="text-sm font-medium" id="connecting">Conectando ao Firebase...</p>
-                <!-- O authErrorBox será usado para a mensagem de erro da imagem, inicialmente oculto -->
+                <!-- O authErrorBox será usado para a mensagem de erro de CONFIGURAÇÃO, inicialmente oculto -->
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 hidden" role="alert" id="authErrorBox">
                     <!-- Mensagem de erro de autenticação/configuração será preenchida pelo JS -->
                 </div>
