@@ -31,9 +31,9 @@ const valorDisplay = document.getElementById('valor-display');
 const mensagemStatus = document.getElementById('mensagem-status');
 const nomesAcompanhantesWrapper = document.getElementById('nomes-acompanhantes-wrapper');
 
-// O ID da festa
-const ID_FESTA = 'uzppMbpJjucjqzJEZQLNZKHSVcI2'; 
-// Caminho correto da coleção: festas/{ID_FESTA}/participantes
+// ⭐️ NOVO ID DA FESTA DE NATAL ⭐️
+const ID_FESTA = 'CONFRATERNIZACAO_NATAL_2025'; 
+// Caminho correto da coleção: festas/CONFRATERNIZACAO_NATAL_2025/participantes
 const colecaoParticipantes = db.collection('festas').doc(ID_FESTA).collection('participantes');
 
 // --- FUNÇÕES DE LÓGICA DE NEGÓCIO ---
