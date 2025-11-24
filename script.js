@@ -36,7 +36,7 @@ const nomesAcompanhantesWrapper = document.getElementById('nomes-acompanhantes-w
 // Estou mantendo o ID da festa original (churrasco) que estava no seu DB para evitar confusão,
 // mas se você estiver usando o código HTML do Natal, mude esta linha para: 
 // const ID_FESTA = 'CONFRATERNIZACAO_NATAL';
-const ID_FESTA = 'uzppMbpJjucjqzJEZQLNZKHSVcI2'; 
+const ID_FESTA = 'CONFRATERNIZACAO_NATAL'; 
 
 const colecaoParticipantes = db.collection('festas').doc(ID_FESTA).collection('participantes');
 
