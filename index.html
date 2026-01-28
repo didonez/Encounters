@@ -3,34 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feliz Natal com Amigo Secreto 🎁</title>
+    <title>Confraternização de Amigos 🥩</title>
     <link rel="stylesheet" href="natal.css"> </head>
 <body>
 
     <div class="container">
         <header class="natal-header">
-            <h1>🎅 FELIZ NATAL 🎄</h1>
-            <p>Celebre a magia do Natal com a gente!</p>
+            <h1>🥩 CHURRASCO DOS AMIGOS 🍻</h1>
+            <p>Nada melhor que reunir a galera para um bom papo!</p>
         </header>
 
         <section class="detalhes">
-            <h2>Detalhes da Confraternização Natalina</h2>
+            <h2>Informações do Encontro</h2>
             
             <div class="info-item">
-                <span class="icon">📍</span> <p><strong>Local:</strong>Av. Benjamin Harris Hunnicutt, 2399 - Casa 45 | Vila Rio | Guarulhos | SP</p>
+                <span class="icon">📍</span> 
+                <p><strong>Local:</strong> Av. Benjamin Harris Hunnicutt, 2399 - Casa 45 | Vila Rio | Guarulhos</p>
             </div>
             
             <div class="info-item">
-                <span class="icon">📅</span> <p><strong>Data/Hora:</strong> 25 de Dezembro (Quarta-feira) a partir das 12h00</p>
-            </div>
-            
-                       
-            <div class="info-item">
-                <span class="icon">🎁</span> <p><strong>Amigo Secreto:</strong> (Traga seu presente com carinho!)</p>
+                <span class="icon">📅</span> 
+                <p><strong>Data/Hora:</strong> Sabado, 15 de Março a partir das 12h00</p>
             </div>
 
             <div class="info-item">
-                <span class="icon">🍽️</span> <p><strong>Sua Contribuição:</strong> Traga um prato para nossa Ceia Compartilhada (salgado ou doce) e sua bebida favorita para brindar!</p>
+                <span class="icon">💰</span> 
+                <p><strong>Contribuição:</strong> R$ 50,00 por pessoa (para carnes e acompanhamentos)</p>
+            </div>
+            
+            <div class="info-item">
+                <span class="icon">🍻</span> 
+                <p><strong>Bebidas:</strong> Traga o que for consumir!</p>
+            </div>
+
+            <div class="info-item">
+                <span class="icon">🎁</span> 
+                <p><strong>Dinâmica:</strong> Teremos Amigo Secreto (Opcional - Valor R$ 30,00)</p>
             </div>
         </section>
 
@@ -40,24 +48,22 @@
             <h2>Confirme Sua Presença</h2>
             <form id="confirmacao-form">
                 
-                <label for="nome">Seu Nome Completo :</label>
-                <input type="text" id="nome" name="nome" placeholder="Ex: Noel Silva" required>
+                <label for="nome">Seu Nome Completo:</label>
+                <input type="text" id="nome" name="nome" placeholder="Ex: João Silva" required>
 
-                <label for="acompanhantes">N&uacute;mero de Acompanhantes :</label>
+                <label for="acompanhantes">Número de Acompanhantes:</label>
                 <input type="number" id="acompanhantes" name="acompanhantes" min="0" max="10" value="0" required>
-                
-              
 
                 <div class="amigo-secreto-opt">
                     <input type="checkbox" id="participa-amigo-secreto" name="participa-amigo-secreto">
-                    <label for="participa-amigo-secreto">Quero participar do Amigo Secreto de Natal! 🎁</label>
+                    <label for="participa-amigo-secreto">Vou participar do Amigo Secreto! 🎁</label>
                 </div>
                 
                 <div id="nomes-acompanhantes-wrapper" style="display:none;">
-                    <h3>Nomes dos Acompanhantes para o Amigo Secreto:</h3>
-                </div>
+                    <h3>Nomes dos Acompanhantes (Amigo Secreto):</h3>
+                    </div>
 
-                <button type="submit" id="btn-confirmar">Confirmar Presença Natalina</button>
+                <button type="submit" id="btn-confirmar">Confirmar Presença</button>
             </form>
 
             <p id="mensagem-status" class="status-message"></p>
@@ -66,17 +72,15 @@
         <hr>
 
         <section class="lista-participantes">
-            <h2>Lista de Convidados Confirmados para o Natal (<span id="total-confirmados">0</span> Pessoas)</h2>
-            <ul id="lista-presenca">
-            </ul>
+            <h2>Lista de Confirmados (<span id="total-confirmados">0</span> Pessoas)</h2>
+            <ul id="lista-presenca"></ul>
         </section>
 
         <hr>
 
         <section class="amigo-secreto-list">
-            <h2>🎁 Participantes do Amigo Secreto de Natal (<span id="total-amigo-secreto">0</span> Nomes)</h2>
-            <ul id="lista-amigo-secreto">
-            </ul>
+            <h2>🎁 Participantes do Amigo Secreto (<span id="total-amigo-secreto">0</span> Nomes)</h2>
+            <ul id="lista-amigo-secreto"></ul>
         </section>
         
         <div class="footer-id">
@@ -87,5 +91,6 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="script.js"></script> </body>
+    <script src="script.js"></script> 
+</body>
 </html>
