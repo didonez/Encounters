@@ -1,24 +1,19 @@
-/* Cores do Evento: Laranja Brasa, Marrom e Amarelo */
 :root {
-    --primary-color: #E64A19; /* Laranja/Vermelho Brasa */
-    --secondary-color: #5D4037; /* Marrom Amadeirado */
-    --accent-color: #FFC107; /* Amarelo Cerveja/Âmbar */
+    --primary-color: #E64A19;
+    --secondary-color: #5D4037;
+    --accent-color: #FFC107;
     --text-color: #333;
     --light-text-color: #f8f8f8;
-    --background-color: #f4f1ea; /* Bege claro (remete a rústico) */
+    --background-color: #f4f1ea;
     --card-background: #ffffff;
     --border-color: #e0e0e0;
 }
 
 body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
     background-color: var(--background-color);
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
+    margin: 0; padding: 20px;
+    display: flex; justify-content: center;
 }
 
 .container {
@@ -26,213 +21,46 @@ body {
     border-radius: 12px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     padding: 30px;
-    max-width: 600px;
+    max-width: 500px;
     width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 50px;
 }
 
-/* Cabeçalho Temático */
 header.natal-header {
-    background-color: var(--primary-color); 
-    background-image: linear-gradient(135deg, #E64A19 0%, #BF360C 100%);
-    color: var(--light-text-color);
-    padding: 25px 20px;
+    background: linear-gradient(135deg, #E64A19 0%, #BF360C 100%);
+    color: white;
+    padding: 20px;
     border-radius: 8px;
-    text-align: center;
-    margin-bottom: 30px;
-    position: relative;
-    overflow: hidden;
-}
-
-header.natal-header h1 {
-    margin: 0;
-    font-size: 2.2em;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    position: relative;
-    z-index: 1;
-}
-
-header.natal-header p {
-    margin-top: 10px;
-    font-size: 1.1em;
-    opacity: 0.9;
-    position: relative;
-    z-index: 1;
-}
-
-/* Efeito de brilho/festa no cabeçalho */
-header.natal-header::before,
-header.natal-header::after {
-    content: '🔥'; /* Ícone de brasa/fogo para churrasco */
-    position: absolute;
-    font-size: 1.5em;
-    animation: bounce 3s infinite ease-in-out alternate;
-    z-index: 0;
-    opacity: 0.3;
-}
-
-header.natal-header::before { top: 10%; left: 5%; }
-header.natal-header::after { bottom: 10%; right: 5%; animation-delay: 1.5s; }
-
-@keyframes bounce {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-10px); }
-}
-
-h2 {
-    color: var(--secondary-color);
     text-align: center;
     margin-bottom: 25px;
-    font-size: 1.5em;
-    border-bottom: 2px solid var(--accent-color);
-    display: inline-block;
-    width: 100%;
-    padding-bottom: 10px;
 }
 
-hr {
-    border: 0;
-    height: 1px;
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), var(--border-color), rgba(0, 0, 0, 0));
-    margin: 30px 0;
+h2 { color: var(--secondary-color); font-size: 1.4em; text-align: center; }
+
+.info-item { display: flex; align-items: center; margin-bottom: 12px; }
+.info-item .icon { font-size: 1.4em; margin-right: 12px; width: 25px; }
+
+form input {
+    width: 100%; padding: 12px; margin-bottom: 15px;
+    border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;
 }
 
-.detalhes, .confirmacao, .lista-participantes, .amigo-secreto-list {
-    margin-bottom: 30px;
-    padding: 20px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: #fff;
-}
-
-.info-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.info-item .icon {
-    font-size: 1.5em;
-    margin-right: 15px;
-    min-width: 30px;
-    text-align: center;
-}
-
-.info-item p {
-    margin: 0;
-    color: var(--text-color);
-    line-height: 1.4;
-}
-
-.info-item strong {
-    color: var(--primary-color);
-}
-
-/* Formulário */
-form label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--secondary-color);
-    font-weight: bold;
-}
-
-form input[type="text"],
-form input[type="number"] {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    border: 2px solid #eee;
-    border-radius: 6px;
-    font-size: 1em;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-}
-
-form input:focus {
-    border-color: var(--accent-color);
-    outline: none;
-}
-
-.amigo-secreto-opt {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    padding: 10px;
-    background: #fff8e1;
-    border-radius: 6px;
-}
-
-.amigo-secreto-opt input[type="checkbox"] {
-    margin-right: 10px;
-    transform: scale(1.3);
-    accent-color: var(--primary-color);
-}
-
-#nomes-acompanhantes-wrapper {
-    background-color: #fdf5e6;
-    border: 1px dashed var(--secondary-color);
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-/* Botão Principal */
 #btn-confirmar {
-    background-color: #388E3C; /* Verde "Confirmação" */
-    color: white;
-    padding: 18px 25px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.2em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s, background-color 0.3s;
-    width: 100%;
-    box-shadow: 0 4px 0 #2e7d32;
+    background-color: #388E3C; color: white; border: none;
+    padding: 15px; border-radius: 8px; width: 100%;
+    font-size: 1.1em; font-weight: bold; cursor: pointer;
 }
 
-#btn-confirmar:hover {
-    background-color: #2e7d32;
-    transform: translateY(-2px);
-}
-
-#btn-confirmar:active {
-    transform: translateY(2px);
-    box-shadow: none;
-}
-
-/* Listas de Participantes */
 ul li {
-    background-color: #f9f9f9;
-    padding: 12px 15px;
-    margin-bottom: 8px;
-    border-radius: 6px;
+    background: #f9f9f9; padding: 10px; margin-bottom: 8px;
+    border-radius: 6px; display: flex; justify-content: space-between;
     border-left: 5px solid var(--accent-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
-/* Rodapé */
-.footer-id {
-    text-align: center;
-    margin-top: 40px;
-    padding: 15px;
-    font-size: 0.8em;
-    color: #999;
-    background: #eee;
-    width: 100%;
-    box-sizing: border-box;
+.btn-delete-small {
+    background: none; border: none; color: #ff5252;
+    cursor: pointer; font-size: 1.2em;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-    .container {
-        margin: 10px;
-        padding: 15px;
-    }
-    header.natal-header h1 { font-size: 1.6em; }
-}
+.status-message { text-align: center; padding: 10px; border-radius: 5px; margin-top: 10px; }
+
+.footer-id { text-align: center; font-size: 0.7em; color: #ccc; margin-top: 30px; }
