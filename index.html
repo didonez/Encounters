@@ -11,7 +11,7 @@
     <div class="container">
         <header class="natal-header">
             <h1>🥩 CHURRASCO DOS AMIGOS 🍻</h1>
-            <p>Confirme sua presença para organizarmos as carnes!</p>
+            <p>Confirme sua presença abaixo!</p>
         </header>
 
         <section class="detalhes">
@@ -46,7 +46,7 @@
                 <label for="nome">Seu Nome:</label>
                 <input type="text" id="nome" name="nome" placeholder="Ex: João Silva" required>
 
-                <label for="acompanhantes">Quantos acompanhantes leva?</label>
+                <label for="acompanhantes">Quantos acompanhantes?</label>
                 <input type="number" id="acompanhantes" name="acompanhantes" min="0" max="10" value="0" required>
 
                 <button type="submit" id="btn-confirmar">Confirmar no Churrasco</button>
@@ -62,13 +62,13 @@
         </section>
 
         <div class="admin-controls" style="text-align: center; margin-top: 20px;">
-            <button id="btn-limpar-lista" style="background: #c62828; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 0.8em; opacity: 0.6;">
+            <button type="button" onclick="resetarListaCompleta()" id="btn-limpar-lista" style="background: #c62828; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 0.8em; opacity: 0.6;">
                 🗑️ Reiniciar Lista para Novo Evento
             </button>
         </div>
         
         <div class="footer-id">
-             ID da Festa: MARÇO 2026
+             ID da Festa: MARCO_2026
         </div>
     </div> 
 
