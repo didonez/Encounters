@@ -11,30 +11,22 @@
     <div class="container">
         <header class="natal-header">
             <h1>🥩 CHURRASCO DOS AMIGOS 🍻</h1>
-            <p>Confirme sua presença abaixo!</p>
+            <p>Confirme sua presença para o churrasco!</p>
         </header>
 
         <section class="detalhes">
             <h2>Informações do Encontro</h2>
-            
             <div class="info-item">
                 <span class="icon">📍</span> 
                 <p><strong>Local:</strong> Av. Benjamin Harris Hunnicutt, 2399 - Casa 45 | Guarulhos</p>
             </div>
-            
             <div class="info-item">
                 <span class="icon">📅</span> 
                 <p><strong>Data/Hora:</strong> Sábado, 15 de Março às 12h00</p>
             </div>
-
             <div class="info-item">
                 <span class="icon">💰</span> 
                 <p><strong>Contribuição:</strong> R$ 50,00 por pessoa</p>
-            </div>
-            
-            <div class="info-item">
-                <span class="icon">🍻</span> 
-                <p><strong>Bebidas:</strong> Traga o que for consumir!</p>
             </div>
         </section>
 
@@ -46,10 +38,10 @@
                 <label for="nome">Seu Nome:</label>
                 <input type="text" id="nome" name="nome" placeholder="Ex: João Silva" required>
 
-                <label for="acompanhantes">Quantos acompanhantes?</label>
+                <label for="acompanhantes">Quantos acompanhantes leva?</label>
                 <input type="number" id="acompanhantes" name="acompanhantes" min="0" max="10" value="0" required>
 
-                <button type="submit" id="btn-confirmar">Confirmar no Churrasco</button>
+                <button type="submit" id="btn-confirmar">Confirmar Presença</button>
             </form>
             <p id="mensagem-status" class="status-message"></p>
         </section>
@@ -62,14 +54,12 @@
         </section>
 
         <div class="admin-controls" style="text-align: center; margin-top: 20px;">
-            <button type="button" onclick="resetarListaCompleta()" id="btn-limpar-lista" style="background: #c62828; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 0.8em; opacity: 0.6;">
-                🗑️ Reiniciar Lista para Novo Evento
+            <button type="button" onclick="resetarListaCompleta()" style="background: #c62828; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 0.8em; opacity: 0.6;">
+                🗑️ Reiniciar Lista (Admin)
             </button>
         </div>
         
-        <div class="footer-id">
-             ID da Festa: MARCO_2026
-        </div>
+        <div class="footer-id">ID da Festa: MARCO_2026</div>
     </div> 
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
