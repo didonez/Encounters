@@ -10,8 +10,8 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore(); 
 
-const ID_FESTA = 'CONFRATERNIZACAO_NATAL'; 
-const SENHA_ADMIN = "1234"; // Defina sua senha aqui
+const ID_FESTA = 'MARÇO 2026'; 
+const SENHA_ADMIN = "860322"; // Defina sua senha aqui
 const colecaoParticipantes = db.collection('festas').doc(ID_FESTA).collection('participantes');
 
 const confirmacaoForm = document.getElementById('confirmacao-form');
